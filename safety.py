@@ -141,10 +141,63 @@ def guard_webview():
         cls.on_new_window_request = on_new_window_request
         cls.guarded = True
     elif IS_MAC:
+        import objc
         import webview
         from webview.platforms import cocoa
         _guard_calls(cocoa)
         webview.settings["ALLOW_DOWNLOADS"] = False
+        view = cocoa.BrowserView
+        if getattr(view, "guarded", False):
+            return
+        # The same three locks as on Windows, in WKWebView's terms (tried in the real window on 22 Nov 2026: without
+        # them the app's window could be sent to another site's page, and that page's tab_call was answered).
+        receive = view.JSBridge.userContentController_didReceiveScriptMessage_
+        decide = view.BrowserDelegate.webView_decidePolicyForNavigationAction_decisionHandler_
+        create = view.BrowserDelegate.webView_createWebViewWithConfiguration_forNavigationAction_windowFeatures_
+        receive_, decide_ = receive.callable, decide.callable
+
+        def userContentController_didReceiveScriptMessage_(self, controller, message):
+            frame = message.frameInfo()                  # who sent it, from WebKit itself
+            if frame is None or not frame.isMainFrame() or not is_app_page(self.window, _mac_origin(frame.securityOrigin())):
+                log.warning("a message from a page that isn't the app's was refused")
+                return
+            return receive_(self, controller, message)
+
+        def webView_decidePolicyForNavigationAction_decisionHandler_(self, webview_, action, handler):
+            try:
+                w = view.get_instance("webview", webview_).pywebview_window
+                target = action.targetFrame()
+                url = action.request().URL()
+                if (is_app_window(w) and home_origin(w) and (target is None or target.isMainFrame())
+                        and not is_app_page(w, url.absoluteString() if url is not None else "")):
+                    log.warning("the app's window was kept on its own page")
+                    handler(0)                           # WKNavigationActionPolicyCancel
+                    return
+            except Exception:
+                log.exception("the navigation guard")
+                handler(0)
+                return
+            return decide_(self, webview_, action, handler)
+
+        def webView_createWebViewWithConfiguration_forNavigationAction_windowFeatures_(self, webview_, config, action, features):
+            log.info("a page's new window was refused")  # never a window, a browser or a program: the app opens
+            return None                                  # links itself, through open_external
+
+        objc.classAddMethods(view.JSBridge, [objc.selector(
+            userContentController_didReceiveScriptMessage_, selector=receive.selector, signature=receive.signature)])
+        objc.classAddMethods(view.BrowserDelegate, [
+            objc.selector(webView_decidePolicyForNavigationAction_decisionHandler_, selector=decide.selector, signature=decide.signature),
+            objc.selector(webView_createWebViewWithConfiguration_forNavigationAction_windowFeatures_, selector=create.selector,
+                          signature=create.signature)])
+        view.guarded = True
+
+
+def _mac_origin(origin) -> str:
+    """A WKSecurityOrigin as an address is_app_page can compare ("http://127.0.0.1:42001")."""
+    if origin is None:
+        return ""
+    port = int(origin.port() or 0)
+    return f"{origin.protocol()}://{origin.host()}" + (f":{port}" if port else "") + "/"
 
 
 def page_port(wanted: int = PAGE_PORT) -> int:

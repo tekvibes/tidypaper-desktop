@@ -1,6 +1,6 @@
-# Where the source is: TidyPaper 0.2.19 for Windows and Mac
+# Where the source is: TidyPaper 0.2.20 for Mac
 
-TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.19). The source of what it is built with:
+TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.20). The source of what it is built with:
 
 ## Python packages (versions of the Windows build)
 
@@ -104,6 +104,6 @@ TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-des
 | Mac only: Tesseract and its English data (a separate program in the bundle) | Apache-2.0 | https://github.com/tesseract-ocr/tesseract, built by https://formulae.brew.sh/formula/tesseract |
 | Mac only: FFmpeg and its libraries (a separate program in the bundle) | GPL, as Homebrew builds it | https://ffmpeg.org/download.html, built by https://formulae.brew.sh/formula/ffmpeg |
 
-The Mac build uses the same packages as Homebrew and pip had them on the day it was built.
+The Mac build uses the same packages as Homebrew and pip had them on the day it was built: versions-mac.txt.
 
 If any of these addresses stops working, write to support@tekvibes.com for a copy of that source.

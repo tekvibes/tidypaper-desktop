@@ -1,6 +1,6 @@
-# Where the source is: TidyPaper 0.2.19
+# Where the source is: TidyPaper 0.2.20
 
-TidyPaper's own source is the public repository (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.19). The source of what it is built with:
+TidyPaper's own source is the public repository (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.20). The source of what it is built with:
 
 ## Python packages (versions of the Windows build)
 

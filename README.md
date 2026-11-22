@@ -1,7 +1,7 @@
 # TidyPaper for Windows and Mac
 
 A plain-English PDF and document helper: read, edit, sign, fill in, scan, redact and convert.
-This is the source of **TidyPaper 0.2.19 for Windows and Mac** (version 0.2.19).
+This is the source of **TidyPaper 0.2.20 for Mac** (version 0.2.20).
 
 - The app and downloads: https://tidypaper.io
 - Licence: GNU Affero General Public License, version 3 - see [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md)
