@@ -141,6 +141,7 @@
       <ul class="xd-checks"></ul>
       <div class="xd-scroll"><div class="xd-fields"></div><table class="xd-table"></table><ol class="xd-foot"></ol></div>
       <div class="dlg-actions"><button type="button" class="btn btn-ghost xd-add"><svg><use href="#i-plus"/></svg>Add a row</button>
+        <button type="button" class="link-btn small xd-report" hidden>Report this answer</button>
         <span class="spacer"></span>
         <button type="button" class="btn btn-ghost xd-copy"><svg><use href="#i-copy"/></svg>Copy</button>
         <button type="button" class="btn btn-ghost xd-csv"><svg><use href="#i-export"/></svg>Save as CSV…</button>
@@ -156,6 +157,9 @@
       which.onchange = () => { state.at = +which.value; render(); if (cur().template.id === "found_values") recheck(); };
     }
     const cur = () => state.list[state.at];
+    const report = d.querySelector(".xd-report");      // the AI's results only: "Tables as they are" are the document's own
+    report.hidden = state.list.every(r => r.template.id === "table");
+    report.onclick = () => window.AI?.report("data");
     let timer = 0;
     const recheck = () => {
       clearTimeout(timer);

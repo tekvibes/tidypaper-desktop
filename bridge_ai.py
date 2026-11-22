@@ -68,6 +68,8 @@ PRESETS = {
               "default_model": "claude-opus-5-5", "models": [], "key_url": "", "needs_key": True, "key_label": "Your code",
               "note": "Paste the invitation you were sent into “Got an invitation?” above - it fills in the address and your code."},
 }
+SUPPORT_EMAIL = "support@tekvibes.com"
+REPORTABLE = {"answer": "An Ask answer", "translation": "A translation", "data": "Pulled-out data"}
 DECIDE_PRESETS = {
     "none": {"label": "Not used", "endpoint": ""},
     "openrouter": {"label": "OpenRouter Decisions (Jev)", "endpoint": "https://openrouter.ai/api/alpha/decisions",
@@ -715,6 +717,20 @@ def list_models(kind: str, base_url: str, key: str | None, provider: str) -> lis
 
 # ------------------------------------------------------------------ bridge
 
+def open_mail(url: str) -> bool:
+    """Hand a mailto: address to the person's own email app.  False: there wasn't one to open."""
+    try:
+        if IS_WIN:
+            os.startfile(url)  # noqa: S606
+            return True
+        import subprocess
+        return subprocess.run(["open" if platform.system() == "Darwin" else "xdg-open", url],
+                              capture_output=True, timeout=30).returncode == 0
+    except Exception:
+        log.exception("opening the email app")
+        return False
+
+
 class AiMixin:
     """Mixed into app.Bridge; relies on self._lock, self._model, self._source, self._load_settings/_save_settings."""
 
@@ -814,6 +830,22 @@ class AiMixin:
         who = (conf or {}).get("person") or name
         return {**self.ai_settings_get(), "person": who,
                 "status": f"Connected{' as ' + who if who else ''}. Open any PDF and press Ask to try it."}
+
+    @safe
+    def ai_report(self, what: str, send: bool = False):
+        """Report this answer: an email in the person's own email app (Microsoft Store policy 11.16).  It never has
+        any of the document or the answer in it - they copy in what they're happy to share, and press Send there."""
+        if what not in REPORTABLE:
+            raise UserError("There's nothing to report here.")
+        from urllib.parse import quote
+        subject = f"{APP_NAME}: report an AI answer"
+        where = {"Darwin": "Mac", "Windows": "Windows"}.get(platform.system(), platform.system())
+        body = f"What was wrong or inappropriate:\n\n\n---\n{REPORTABLE[what]} · {APP_NAME} {brand.VERSION} · {where}"
+        out = {"address": SUPPORT_EMAIL, "subject": subject, "body": body}
+        if send:
+            url = f"mailto:{SUPPORT_EMAIL}?subject={quote(subject)}&body={quote(body.replace(chr(10), chr(13) + chr(10)))}"
+            out["opened"] = bool(open_mail(url))
+        return out
 
     @safe
     def ai_relay_info(self):

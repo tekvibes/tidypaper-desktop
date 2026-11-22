@@ -85,6 +85,8 @@
     const box = dlg.querySelector("[data-panel=updates]");
     const r = await api.update_settings_get();
     if (r.error) return box.replaceChildren(el("p", { class: "field-error", text: r.error }));
+    if (r.store) return box.replaceChildren(el("p", { class: "small", text: `This is ${APP.name} ${r.current}.` }),
+      el("p", { class: "muted small", text: `The Microsoft Store keeps ${APP.name} up to date.` }));
     const st = r.update || {};
     const auto = el("input", { type: "checkbox", class: "st-switch-in", disabled: !r.possible || null });
     auto.checked = r.auto && r.possible;

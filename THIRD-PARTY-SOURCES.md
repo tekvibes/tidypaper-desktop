@@ -1,6 +1,6 @@
-# Where the source is: TidyPaper 0.2.17 for Mac and for Windows
+# Where the source is: TidyPaper 0.2.18 for Windows
 
-TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.17). The source of what it is built with:
+TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.18). The source of what it is built with:
 
 ## Python packages (versions of the Windows build)
 

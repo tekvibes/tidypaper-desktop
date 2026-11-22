@@ -748,7 +748,9 @@ class FillMixin:
         return out
 
     @safe
-    def fill_plan(self, use_ai: bool = True):
+    def fill_plan(self, use_ai: bool = False):
+        """[use_ai]: the person has said yes to sending what "ai_ask" showed.  Without it nothing leaves this computer
+        (AI on this PC is used straight away): "ai_ask" says what would be sent, and to whom."""
         details = load_details()
         items = []
         with self._lock:
@@ -771,11 +773,16 @@ class FillMixin:
                 if not widgets:
                     items += self._paper_slots(i, pg)
             doc_name = (self._source or m.path or Path("form.pdf")).name
-        ai_used, ai_note = False, None
+        ai_used, ai_note, ai_ask = False, None, None
         unmatched = [it for it in items if it["kind"] == "field" and not it["match"] and (it["near"] or it["label"])]
-        if use_ai and unmatched:
+        if unmatched:
             try:
-                got = self._ai_match_labels(unmatched, doc_name)
+                ask = self._labels_ask(unmatched)
+                got = None
+                if ask and (use_ai or ask["local"]):
+                    got = self._ai_match_labels(unmatched, doc_name)
+                elif ask:
+                    ai_ask = ask
                 if got is not None:
                     ai_used = True
                     for it in unmatched:
@@ -792,9 +799,35 @@ class FillMixin:
             else:
                 it["value"] = ""
         return {"items": items, "details_saved": any(details.get(k) for k in FIELD_KEYS), "ai_used": ai_used,
-                "ai_note": ai_note, "describe": DESCRIBE, "paper": any(it["kind"] == "paper" for it in items)}
+                "ai_note": ai_note, "ai_ask": ai_ask, "describe": DESCRIBE, "paper": any(it["kind"] == "paper" for it in items)}
 
     # ---- AI for the boxes the rules couldn't place (labels only - never the person's details)
+    def _labels_ask(self, items) -> dict | None:
+        """What matching these boxes by AI would send, and to whom - as _decide_match / _llm_match send it."""
+        cfg = self._ai_cfg()
+        if not cfg.get("enabled"):
+            return None
+        from bridge_ai import short_name
+        dec = cfg.get("decide") or {}
+        if dec.get("provider") not in (None, "", "none"):
+            who, local = self._decide_who(dec, cfg), False
+            boxes = [(it["label"], it["near"]) for it in items]
+        else:
+            p, pre, base, model, key = self._ai_target(cfg)
+            who = short_name(p, base)
+            local = p == "ollama" and re.match(r"^https?://(127\.0\.0\.1|localhost)([:/]|$)", base) is not None
+            boxes = [(it["label"][:80], it["near"][:80]) for it in items[:150]]
+        sent = "\n".join(label + (f"  (printed by it: {near})" if near and near != label else "") for label, near in boxes)
+        return {"provider": who, "local": local, "count": len(boxes), "sent": sent}
+
+    def _decide_who(self, dec, cfg) -> str:
+        """The name of the quick-decisions service; UserError when it isn't set up (then there's nothing to ask)."""
+        url, key = self._decide_endpoint(dec, cfg)
+        if not url or not key:
+            raise UserError("Quick decisions needs its key - add your OpenRouter key in Settings → AI assistant.")
+        from bridge_ai import AI_NAME
+        return AI_NAME if dec["provider"] == "relay" else "OpenRouter"
+
     def _ai_match_labels(self, items, doc_name):
         cfg = self._ai_cfg()
         if not cfg.get("enabled"):
@@ -910,8 +943,10 @@ class FillMixin:
 
     # ---- personal-details finder
     @safe
-    def pii_scan(self, use_ai: bool = True, stopped: bool = False):
-        """[stopped]: the scan's words were being read for this and the person stopped it - said in [left]."""
+    def pii_scan(self, use_ai: bool = False, stopped: bool = False):
+        """[stopped]: the scan's words were being read for this and the person stopped it - said in [left].
+        [use_ai]: the person has said yes to sending what "ai_ask" showed - the doubtful finds and the lines they are
+        on, which can be personal details themselves.  Without it nothing is sent."""
         own = own_details(load_details())
         with self._lock:
             m = self._need_doc()
@@ -922,10 +957,18 @@ class FillMixin:
             out = [{"id": n, "page": f["page"], "kind": f["kind"], "label": f["label"], "text": f["text"],
                     "rect": self._D(f["page"], f["rect"]), "more": [self._D(f["page"], r) for r in f["more"]],
                     "conf": f["conf"], "context": f["line"][:120]} for n, f in enumerate(kept)]
-        ai_used, ai_note = False, None
+        ai_used, ai_note, ai_ask = False, None, None
         doubtful = [o for o in out if o["conf"] < 0.85 and o["kind"] not in WIDER_KINDS]     # an address stays unticked
         cfg = self._ai_cfg()
-        if use_ai and doubtful and cfg.get("enabled") and (cfg.get("decide") or {}).get("provider") not in (None, "", "none"):
+        dec = cfg.get("decide") or {}
+        judged = bool(doubtful and cfg.get("enabled") and dec.get("provider") not in (None, "", "none"))
+        if judged and not use_ai:
+            try:
+                ai_ask = {"provider": self._decide_who(dec, cfg), "count": len(doubtful[:400]),
+                          "sent": "\n\n".join(f"{o['text']}\n    on the line: {o['context']}" for o in doubtful[:400])}
+            except UserError as e:
+                ai_note = str(e)
+        if judged and use_ai:
             try:
                 qs = {f"c{o['id']}": {"type": "noul",
                                       "instructions": f"Is “{o['text']}” in item c{o['id']} a piece of someone's personal, contact or financial information?",
@@ -941,7 +984,7 @@ class FillMixin:
                         o["ai"] = True
             except UserError as e:
                 ai_note = str(e)
-        return {"items": out, "ai_used": ai_used, "ai_note": ai_note, "details_saved": bool(own),
+        return {"items": out, "ai_used": ai_used, "ai_note": ai_note, "ai_ask": ai_ask, "details_saved": bool(own),
                 "scans": scans, "pages": pages, "left": scans_left(len(scans), pages, stopped),
                 "nothing_found": NOTHING_FOUND, "scans_read": SCANS_READ}
 

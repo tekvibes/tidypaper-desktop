@@ -127,7 +127,8 @@
       if (t.card) renderCard(box, t.card); else render(box, t.answer);
       const ans = el("div", { class: "ai-msg bot" }, box, el("div", { class: "ai-meta muted small" },
         `Pages ${t.pages}${t.partial ? " (best matches)" : ""} · ${t.provider}${t.think ? " · thought it through" : ""}`,
-        el("button", { class: "link-btn small", text: "Copy", onclick: () => copyText(plain, "Answer copied.") })));
+        el("button", { class: "link-btn small", text: "Copy", onclick: () => copyText(plain, "Answer copied.") }),
+        el("button", { class: "link-btn small ai-report", text: "Report this answer", onclick: () => report("answer") })));
       ans._copy = plain;
       chat.append(me, ans);
     }
@@ -194,6 +195,38 @@
     }, { once: true }));
   }
 
+  // ------------------------------------------------------------------ report (also Translate's and Pull out data's)
+  /** Report this answer: an email to the developer in the person's own email app, with nothing of the document or
+      the answer put in it (bridge_ai.ai_report). */
+  async function report(what) {
+    const r = await api.ai_report(what);
+    if (fail(r)) return;
+    const d = el("dialog", { class: "dialog ai-consent ai-report-dlg" });
+    d.innerHTML = `<form method="dialog">
+      <div class="dlg-head"><span class="dlg-icon"><svg><use href="#i-alert"/></svg></span><div><h3></h3><p class="muted ai-r-msg"></p></div></div>
+      <p class="small">Write to <strong class="ai-r-to"></strong></p>
+      <p class="note-amber small ai-r-note"></p>
+      <div class="dlg-actions"><button type="button" class="btn btn-ghost ai-r-copy">Copy the address</button><span class="spacer"></span>
+        <button class="btn btn-ghost" value="cancel">Cancel</button><button class="btn btn-primary" value="ok">Open an email</button></div></form>`;
+    d.querySelector("h3").textContent = { translation: "Report this translation", data: "Report this pulled-out data" }[what] || "Report this answer";
+    d.querySelector(".ai-r-msg").textContent = `Tell the makers of ${APP.name} if what the AI wrote is inappropriate, harmful or badly wrong.`;
+    d.querySelector(".ai-r-to").textContent = r.address;
+    d.querySelector(".ai-r-note").textContent = "Nothing from your document or the answer is put in the email. Copy in only what " +
+      "you're happy to share. Nothing is sent until you press Send in your email app.";
+    d.querySelector(".ai-r-copy").onclick = () => copyText(r.address, "Address copied.");
+    document.body.append(d);
+    d.addEventListener("close", async () => {
+      const go = d.returnValue === "ok";
+      d.remove();
+      if (!go) return;
+      const x = await api.ai_report(what, true);
+      if (fail(x)) return;
+      toast(x.opened ? `Your email app should open. If it doesn't, write to ${r.address}.`
+        : `No email app could be opened - write to ${r.address}.`, { ms: 9000 });
+    }, { once: true });
+    d.showModal();
+  }
+
   // ------------------------------------------------------------------ asking
   const LABELS = { summary: "Summarise this document", todo: "What do I need to do?", dates: "Dates, deadlines & money",
     card: "What does it want?" };
@@ -252,6 +285,7 @@
       meta.replaceChildren(
         `Pages ${st.pages}${st.partial ? " (best matches)" : ""} · ${st.provider}${st.elapsed_s != null ? ` · ${st.elapsed_s} s` : ""}${st.truncated ? " · cut short" : ""}${how}`,
         st.text ? el("button", { class: "link-btn small", text: "Copy", onclick: () => copyText(plain, "Answer copied.") }) : "",
+        st.text ? el("button", { class: "link-btn small ai-report", text: "Report this answer", onclick: () => report("answer") }) : "",
         // a harder question: ask again, letting the AI think first (slower; the relay's admin decides how much)
         st.can_think && !st.think && !st.cancelled ? el("button", { class: "link-btn small ai-think-btn", title: "Ask again, letting the AI think it through first. Slower, for harder questions.",
           onclick: e => { e.currentTarget.remove(); ask(mode, question, selection, page, true); } }, icon("ask"), "Think it through") : "");
@@ -456,6 +490,7 @@
     if (sel) items.push({ label: "Copy", icon: "copy", kbd: "Ctrl C", run: () => copyText(sel) });
     if (msg?._copy) items.push({ label: msg.classList.contains("me") ? "Copy this question" : "Copy this answer", icon: "copy",
       run: () => copyText(msg._copy, msg.classList.contains("me") ? "Question copied." : "Answer copied.") });
+    if (msg?._copy && msg.classList.contains("bot")) items.push({ label: "Report this answer", icon: "alert", run: () => report("answer") });
     if (A.el.querySelector(".ai-chat").childElementCount) items.push({ label: "Select all", kbd: "Ctrl A", run: selectChat });
     if (!items.length) return;
     e.preventDefault();
@@ -482,7 +517,7 @@
   document.addEventListener("click", e => { if (e.target.closest("#btn-comments") && A.open) toggle(false); }, true);
 
   refresh();
-  window.AI = { toggle, ask, explain, refresh, key, isReady: ready, render, renderCard, cardText, tabLeave, tabEnter, tabClosed,
+  window.AI = { toggle, report, ask, explain, refresh, key, isReady: ready, render, renderCard, cardText, tabLeave, tabEnter, tabClosed,
     docChanged() {
       A.history = false;                            // the next document's earlier questions are shown when the panel opens
       if (A.el) { stop(); A.el.querySelector(".ai-chat").replaceChildren(); if (A.open) showHistory(); }

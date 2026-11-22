@@ -14,7 +14,8 @@ from pathlib import Path
 
 DEFAULTS = {"name": "TidyPaper", "ai_name": "Shared AI", "version": "0.1.0",
             "tagline": "PDF and document helper", "publisher": "TidyPaper",
-            "update_url": ""}     # where the app checks for new versions (the relay's /version); empty = never
+            "update_url": "",     # where the app checks for new versions (the relay's /version); empty = never
+            "store": ""}          # "microsoft" in the Microsoft Store's package (build/make_msix.py): the Store updates it
 
 
 def _candidates():
@@ -63,6 +64,7 @@ TAGLINE = BRAND["tagline"]
 PUBLISHER = BRAND["publisher"]
 UPDATE_URL = BRAND["update_url"] if BRAND["update_url"].startswith("https://") else ""
 EXE_STEM = file_stem(NAME)
+STORE = BRAND["store"].lower()      # "" = our own installer;  "microsoft" = installed from the Microsoft Store
 
 
 if __name__ == "__main__":                            # the build asks: py brand.py name|stem|version

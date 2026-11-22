@@ -211,6 +211,8 @@
           el("div", { class: "tr-pg-head" },
             el("button", { type: "button", class: "ai-cite", title: "Show this page", onclick: () => { T.follow = false; goTo(i); } }, icon("file"), `Page ${i + 1}`),
             el("span", { class: "spacer" }),
+            el("button", { type: "button", class: "link-btn small tr-report", text: "Report", title: "Report this translation",
+              onclick: () => window.AI?.report("translation") }),
             el("button", { type: "button", class: "icon-btn sm tr-pg-again", "aria-label": `Translate page ${i + 1} again`,
               title: "Translate this page again (replaces this translation)", onclick: () => start(i) }, icon("rotate-r")),
             el("button", { type: "button", class: "icon-btn sm tr-pg-copy", "aria-label": `Copy page ${i + 1}`, title: "Copy this page",

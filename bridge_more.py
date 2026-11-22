@@ -204,10 +204,11 @@ class MoreMixin:
         can install it by itself, auto: True + the download's state (the page then follows update_status).
         Also says once whether the last self-install worked (updated / update_failed).
         Checks at most once a day unless force; network problems just report newer: False."""
+        if brand.STORE:                   # before anything is read or cleared: ~/.toolkit (the settings, the downloaded
+            return {"enabled": False}     # update) is shared with a copy from our installer, and those are that copy's
         s = _load()
         after = self._after_update(s)
-        # TOOLKIT_UPDATE_URL (even empty) replaces the built-in address: tests and dev runs never reach the real relay
-        url = (s.get("update_url") or os.environ.get("TOOLKIT_UPDATE_URL", UPDATE_URL) or "").strip()
+        url = self._update_address(s)
         if not url:
             return {"enabled": False, **after}
         now = time.time()
@@ -266,11 +267,15 @@ class MoreMixin:
     @safe
     def update_status(self):
         """The self-installing update: {state: idle|downloading|checking|ready|failed, version, done, total, error}."""
+        if brand.STORE:                   # not even _upd(): starting it tidies away the other copy's download
+            return {"state": "idle"}
         return self._upd().status()
 
     def update_on_exit(self, relaunch: bool = False) -> bool:
         """The window is closing: start installing a downloaded update (it waits for the app to quit).
         relaunch: open the app again afterwards ("Restart now"); a plain close just installs."""
+        if brand.STORE:
+            return False
         try:
             u = getattr(self, "_updater", None)
             r = u.ready() if u else None
@@ -287,6 +292,8 @@ class MoreMixin:
     @safe
     def update_restart(self):
         """'Restart now': close (asking about unsaved changes first), install, open again."""
+        if brand.STORE:
+            raise UserError(f"The Microsoft Store keeps {brand.NAME} up to date.")
         if not self._upd().ready():
             raise UserError("The new version isn't ready yet.")
         win = getattr(self, "_window", None)
@@ -300,11 +307,21 @@ class MoreMixin:
             threading.Timer(0.2, win.destroy).start()          # let this call return to the page first
         return {"ok": True}
 
+    @staticmethod
+    def _update_address(s: dict) -> str:
+        """Where to ask for new versions; "" = never.  A copy from the Microsoft Store never asks: the Store updates it.
+        TOOLKIT_UPDATE_URL (even empty) replaces the built-in address: tests and dev runs never reach the real relay."""
+        if brand.STORE:
+            return ""
+        return (s.get("update_url") or os.environ.get("TOOLKIT_UPDATE_URL", UPDATE_URL) or "").strip()
+
     @safe
     def update_settings_get(self):
+        if brand.STORE:
+            return {"store": brand.STORE, "current": APP_VERSION, "enabled": False}
         ok, why = self._upd().possible()
         return {"auto": self._auto_on(), "possible": ok, "why": why, "current": APP_VERSION, "update": self._upd().status(),
-                "enabled": bool((_load().get("update_url") or os.environ.get("TOOLKIT_UPDATE_URL", UPDATE_URL) or "").strip())}
+                "enabled": bool(self._update_address(_load()))}
 
     @safe
     def update_settings_set(self, auto: bool):

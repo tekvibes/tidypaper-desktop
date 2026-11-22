@@ -22,6 +22,23 @@
     setTimeout(() => f.remove(), 1600);
   }
 
+  /** Before anything goes to an AI service: what, to whom, and all of it to read.  "Don't send" is the button in
+      hand, and closing the box is a no.  Resolves true = send. */
+  function askSend(title, msg, sent, yes) {
+    const d = dialog("ai-consent send-ask", `<form method="dialog">
+      <div class="dlg-head"><span class="dlg-icon"><svg><use href="#i-ask"/></svg></span><div><h3></h3><p class="muted sa-msg"></p></div></div>
+      <details class="ai-sent"><summary>Show what's sent</summary><pre></pre></details>
+      <div class="dlg-actions"><button class="btn btn-ghost sa-no" value="cancel">Don't send</button>
+        <button class="btn btn-primary sa-yes" value="ok"></button></div></form>`);
+    d.querySelector("h3").textContent = title;
+    d.querySelector(".sa-msg").textContent = msg;
+    d.querySelector("pre").textContent = sent;
+    d.querySelector(".sa-yes").textContent = yes;
+    d.showModal();
+    d.querySelector(".sa-no").focus();
+    return new Promise(res => d.addEventListener("close", () => res(d.returnValue === "ok"), { once: true }));
+  }
+
   // ------------------------------------------------------------------ My details
   async function details() {
     const r = await api.details_get();
@@ -30,7 +47,7 @@
       <div class="td-head"><h3>My details</h3><span class="muted">used to fill in forms - kept on this ${APP.mac ? "Mac" : "PC"} only</span>
         <button class="icon-btn sm td-x" value="cancel" aria-label="Close"><svg><use href="#i-x"/></svg></button></div>
       <div class="fd-body"></div>
-      <p class="note-amber small"><svg><use href="#i-lock"/></svg><span>${APP.mac ? "Saved in your Mac's Keychain" : "Saved encrypted for your Windows account"}. They're never sent to an AI service - only a form's box labels are, when AI matching is on.</span></p>
+      <p class="note-amber small"><svg><use href="#i-lock"/></svg><span>${APP.mac ? "Saved in your Mac's Keychain" : "Saved encrypted for your Windows account"}. They're never sent to an AI service - only a form's box labels are, when you say yes to that.</span></p>
       <p class="field-error fd-err" hidden></p>
       <div class="dlg-actions"><button type="button" class="link-btn fd-clear">Delete my saved details</button><span class="spacer"></span>
         <button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button><button class="btn btn-primary" value="ok">Save</button></div></form>`);
@@ -86,12 +103,27 @@
     if (!S.doc) return;
     await window.Edit?.commitPending();
     setStatus("Looking at the form…");
-    let plan = await api.fill_plan(true);
+    const tab = S.tab;
+    let plan = await api.fill_plan();
     if (fail(plan)) return;
     if (!plan.details_saved) {
       if (!(await details())) return;
-      plan = await api.fill_plan(true);
+      plan = await api.fill_plan();
       if (fail(plan)) return;
+    }
+    const a = plan.ai_ask;
+    if (a) {
+      const yes = await askSend(`Send the form's box labels to ${a.provider}?`,
+        `${a.count === 1 ? "One box" : `${a.count} boxes`} couldn't be matched to your details on this ${APP.mac ? "Mac" : "PC"}. ` +
+        `${a.provider} can match ${a.count === 1 ? "it" : "them"} from the labels and the words printed by them. ` +
+        "Your details aren't sent - only the names of the kinds, such as Postcode. You can fill the form without sending.",
+        a.sent, "Send the labels");
+      if (S.tab !== tab) return;                         // another document came to the front meanwhile
+      if (yes) {
+        setStatus(`Matching the boxes with ${a.provider}…`);
+        plan = await api.fill_plan(true);
+        if (fail(plan) || S.tab !== tab) return;
+      }
     }
     const items = plan.items;
     if (!items.length) return toast("No form boxes or labels like “Name:” were found in this document. Use Text → Text box to type anywhere.", { error: true });
@@ -183,8 +215,22 @@
       readNow = !!rd.changed?.length;
     }
     setStatus("Looking for personal details…");
-    const r = await api.pii_scan(true, stopped);
+    const tab = S.tab;
+    let r = await api.pii_scan(false, stopped);
     if (fail(r)) return;
+    if (r.ai_ask) {
+      const a = r.ai_ask;
+      const yes = await askSend(`Send ${a.count === 1 ? "this doubtful find" : `these ${a.count} doubtful finds`} to ${a.provider}?`,
+        `${a.provider} can double-check what the rules weren't sure of. It's sent the words found and the lines they are on, ` +
+        "which can be personal details themselves. You can look through them yourself without sending.",
+        a.sent, "Send to double-check");
+      if (S.tab !== tab) return;
+      if (yes) {
+        setStatus(`Double-checking with ${a.provider}…`);
+        r = await api.pii_scan(true, stopped);
+        if (fail(r) || S.tab !== tab) return;
+      }
+    }
     const hint = r.details_saved ? "" : " Add your details (More → My details) to also look for your name and address.";
     // nothing could be read at all: there was nothing to look through - said in a box that waits, never skipped
     if (r.left && r.scans.length >= r.pages) { setStatus(""); return waitBox(r.left); }
