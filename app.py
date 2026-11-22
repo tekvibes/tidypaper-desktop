@@ -31,6 +31,7 @@ sys.path.insert(0, str(HERE))
 
 import brand  # noqa: E402
 import convert  # noqa: E402
+import safety  # noqa: E402
 from bridge_util import log, nice_time, safe, unique  # noqa: E402
 from pdf_editor import PdfModel, fitz  # noqa: E402
 from bridge_ai import AiMixin  # noqa: E402
@@ -38,6 +39,7 @@ from bridge_edit import EditMixin  # noqa: E402
 from bridge_fill import FillMixin  # noqa: E402
 from bridge_sign import SignMixin  # noqa: E402
 from bridge_more import MoreMixin  # noqa: E402
+from bridge_about import AboutMixin  # noqa: E402
 from bridge_read import ReadMixin  # noqa: E402
 from bridge_notes import NotesMixin  # noqa: E402
 from bridge_pictures import PicturesMixin  # noqa: E402
@@ -131,7 +133,7 @@ TAB_STATE = ("_model", "_source", "_target", "_password", "_converted", "_doc_ke
              "_scanspot")
 
 
-class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, ShareMixin, AiMixin, FillMixin, TaskMixin, MoreMixin, ScanMixin, ReadMixin, NotesMixin, PicturesMixin, OpenMixin, ScanWordsMixin, ScanEditMixin):
+class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, ShareMixin, AiMixin, FillMixin, TaskMixin, MoreMixin, ScanMixin, ReadMixin, NotesMixin, PicturesMixin, OpenMixin, ScanWordsMixin, ScanEditMixin, AboutMixin):
     """Everything the web page can ask Python to do.  Names starting with _ are not exposed."""
 
     def __init__(self, start_files: list | None = None):
@@ -332,7 +334,8 @@ class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, Shar
 
     @safe
     def open_external(self, path: str):
-        """Open a file in its default program."""
+        """Open a document, a folder or a web page in the person's program for it - never a program (safety.py)."""
+        path = safety.open_target(path)
         if IS_WIN:
             os.startfile(path)  # noqa: S606
         else:
@@ -512,8 +515,11 @@ class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, Shar
         for r in signing.verify_pdf(src):
             signer = r.get("signer", "")
             cn = next((part.split(":", 1)[1].strip() for part in signer.split(",") if part.strip().lower().startswith("common name")), signer)
-            ok = r.get("intact") and r.get("modified_after") in ("NONE", "LTA_UPDATES", None)
+            # intact: the pages match the fingerprint in the signature.  valid: the signature itself checks out -
+            # without it anyone could write that fingerprint under anyone's name
+            ok = r.get("intact") and r.get("valid") and r.get("modified_after") in ("NONE", "LTA_UPDATES", None)
             out.append({"signer": cn or "unknown", "when": nice_time(r.get("signed_at")), "ok": bool(ok),
+                        "forged": bool(r.get("intact") and not r.get("valid")),
                         "trusted": bool(r.get("trusted")), "error": r.get("error")})
         return {"signatures": out}
 
@@ -779,6 +785,8 @@ def serve(bridge: Bridge, port: int = 8765):
         def do_POST(self):
             name = self.path.rsplit("/", 1)[-1]
             fn = getattr(bridge, name, None)
+            if not safety.local_request(self.headers, self.server.server_address[1]):
+                self.send_error(403); return
             if not self.path.startswith("/api/") or name.startswith("_") or not callable(fn):
                 self.send_error(404); return
             n = int(self.headers.get("Content-Length") or 0)
@@ -818,10 +826,12 @@ def main(argv=None):
     _setup_logging()
     if argv and argv[0] == "--serve":
         port = int(argv[1]) if len(argv) > 1 else 8765
+        safety.settle()
         serve(Bridge(), port)
         return
 
     files = [str(Path(a).resolve()) for a in argv if not a.startswith("-")]
+    safety.settle()          # (after the files' paths are whole: it changes the working folder)
     # one copy at a time (instance.py): a second copy hands its files to the running one and quits.  The built app
     # always; a run from the code only with TOOLKIT_SINGLE=1 (so it can be tried next to the installed app)
     single = getattr(sys, "frozen", False) or os.environ.get("TOOLKIT_SINGLE") == "1"
@@ -833,6 +843,7 @@ def main(argv=None):
     import webview
     from webview.dom import DOMEventHandler
 
+    safety.guard_webview()
     _forget_old_page()
     bridge = Bridge(files)
     settings = load_settings()
@@ -876,7 +887,8 @@ def main(argv=None):
         except Exception:
             log.exception("couldn't listen for other copies")
     try:
-        webview.start(debug="--debug" in argv, private_mode=False, storage_path=str(CONFIG_DIR / "webview"))
+        webview.start(debug="--debug" in argv, private_mode=False, storage_path=str(CONFIG_DIR / "webview"),
+                      http_port=safety.page_port())
     finally:
         if listener:
             listener.stop()

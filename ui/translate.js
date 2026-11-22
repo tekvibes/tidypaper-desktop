@@ -160,10 +160,11 @@
     return new Promise(res => {
       const d = el("dialog", { class: "dialog" });
       d.innerHTML = `<form method="dialog"><h3>Translate ${n} pages?</h3>
-        <p class="muted">Each page goes to ${T.opts.provider} on its own${g != null ? `, about ${money(g)} of your allowance in all` : ""}.
+        <p class="muted">Each page goes to <span class="tr-big-who"></span> on its own${g != null ? `, about ${money(g)} of your allowance in all` : ""}.
         It takes a while - you can read on, and stop at any time.</p>
         <div class="dlg-actions"><span class="spacer"></span><button class="btn btn-ghost" value="cancel">Cancel</button>
         <button class="btn btn-primary" value="ok">Translate</button></div></form>`;
+      d.querySelector(".tr-big-who").textContent = T.opts.provider;       // a name from settings: never as HTML
       document.body.append(d);
       d.addEventListener("close", () => { res(d.returnValue === "ok"); setTimeout(() => d.remove(), 0); }, { once: true });
       d.showModal();

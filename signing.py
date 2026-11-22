@@ -264,7 +264,9 @@ def verify_pdf(path: str | Path | bytes) -> list[dict]:
                 roots.append(load_cert_from_pemder(str(cer)))
             except Exception:
                 pass
-    vc = ValidationContext(trust_roots=roots, allow_fetching=True, revocation_mode="soft-fail")
+    # nothing is fetched: the addresses would be the file's own (whoever wrote it would learn it was opened, and
+    # could aim the app at this computer's network), and only the certificates trusted here can make it "trusted"
+    vc = ValidationContext(trust_roots=roots, allow_fetching=False, revocation_mode="soft-fail")
 
     data = Path(path).read_bytes() if not isinstance(path, bytes) else path
     r = PdfFileReader(io.BytesIO(data), strict=False)
@@ -299,6 +301,8 @@ def describe(results: list[dict]) -> str:
             out.append(f"[{r['field']}]  could not validate: {r['error']}"); continue
         if not r["intact"]:
             verdict = "INVALID - the document was changed after signing"
+        elif not r.get("valid"):
+            verdict = "INVALID - the signature itself doesn't check out (it may be forged)"
         elif r["modified_after"] not in ("NONE", "LTA_UPDATES"):
             verdict = f"signature intact, but the document was modified afterwards ({r['modified_after'].lower().replace('_', ' ')})"
         elif r["trusted"]:

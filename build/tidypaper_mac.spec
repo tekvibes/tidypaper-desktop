@@ -33,6 +33,7 @@ print(f"Building {BRAND['name']} {VERSION} -> {STEM}.app ({BUNDLE_ID})")
 datas, binaries, hiddenimports = [], [], []
 datas.append((str(ROOT / "ui"), "ui"))
 datas.append((str(BRAND_FILE), "."))
+datas.append((str(ROOT / "legal"), "legal"))        # Settings › About: the licence and the notices
 datas.append((str(ROOT / "prompts.json"), "."))     # what the AI is told (shared with the iPad app)
 
 hiddenimports += ["tools", "pdf_editor", "signing", "taskrunner", "darkdetect", "brand", "convert", "msoffice", "updater", "instance",

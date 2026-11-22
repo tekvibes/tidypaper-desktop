@@ -18,11 +18,13 @@
           <button type="button" role="tab" data-tab="ai"><svg><use href="#i-ask"/></svg>AI assistant</button>
           <button type="button" role="tab" data-tab="details"><svg><use href="#i-form"/></svg>My details</button>
           <button type="button" role="tab" data-tab="updates"><svg><use href="#i-download"/></svg>Updates</button>
+          <button type="button" role="tab" data-tab="about"><svg><use href="#i-file"/></svg>About</button>
         </div>
         <section class="st-panel" data-panel="look"></section>
         <section class="st-panel" data-panel="ai"></section>
         <section class="st-panel" data-panel="details"></section>
         <section class="st-panel" data-panel="updates"></section>
+        <section class="st-panel" data-panel="about"></section>
         <p class="st-status muted small" role="status" aria-live="polite"></p>
         <div class="dlg-actions"><button class="btn btn-primary" value="close">Done</button></div>
       </form>`;
@@ -268,6 +270,32 @@
         field("Service", decSel), decModel));
   }
 
+  // ------------------------------------------------------------------ about: copyright, no warranty, licence, source
+  async function renderAbout() {
+    const box = dlg.querySelector("[data-panel=about]");
+    const r = await api.about();
+    if (r.error) return box.replaceChildren(el("p", { class: "field-error", text: r.error }));
+    const text = el("pre", { class: "st-legal", tabindex: "0", hidden: true });
+    const show = async id => {
+      const t = await api.about_text(id);
+      if (t.error) return say(t.error, true);
+      text.textContent = t.text; text.hidden = false; text.scrollTop = 0;
+      text.setAttribute("aria-label", t.title);
+    };
+    box.replaceChildren(
+      el("p", {}, el("strong", { text: `${r.name} ${r.version}` })),
+      el("p", { class: "small", text: r.copyright }),
+      el("p", { class: "small", text: `${r.name} for Windows and Mac is free software. You may use, copy, change and share it ` +
+        "under the GNU Affero General Public License, version 3. It comes with absolutely no warranty, to the extent the law allows." }),
+      el("div", { class: "st-row st-about-links" },
+        el("button", { type: "button", class: "btn btn-outline sm st-source", text: "Get this version's source code",
+          onclick: async () => { const x = await api.open_external(r.source); if (x.error) say(x.error, true); } })),
+      el("p", { class: "muted small st-source-url", text: r.source }),
+      el("div", { class: "st-legal-links" }, ...r.texts.map(t =>
+        el("button", { type: "button", class: "link-btn small", "data-text": t.id, text: t.title, onclick: () => show(t.id) }))),
+      text);
+  }
+
   async function open(section = "ai") {
     if (!dlg) build();
     const r = await api.ai_settings_get();
@@ -276,6 +304,7 @@
     renderLook(); renderAi(); say("");
     await renderDetails();
     await renderUpdates();
+    await renderAbout();
     tab(section);
     if (!dlg.open) dlg.showModal();
   }

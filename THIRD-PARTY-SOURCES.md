@@ -1,6 +1,6 @@
-# Where the source is: TidyPaper 0.2.18 for Windows
+# Where the source is: TidyPaper 0.2.19 for Windows and Mac
 
-TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.18). The source of what it is built with:
+TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.19). The source of what it is built with:
 
 ## Python packages (versions of the Windows build)
 
@@ -40,7 +40,7 @@ TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-des
 | multidict 7.2.1 | Apache-2.0 | https://pypi.org/project/multidict/7.2.1/#files |
 | numpy 2.5.4 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | https://pypi.org/project/numpy/2.5.4/#files |
 | openpyxl 3.1.5 | MIT License | https://pypi.org/project/openpyxl/3.1.5/#files |
-| opentelemetry-api 1.45.1 | Apache-2.0 | https://pypi.org/project/opentelemetry-api/1.45.1/#files |
+| opentelemetry-api 1.45.2 | Apache-2.0 | https://pypi.org/project/opentelemetry-api/1.45.2/#files |
 | oscrypto 1.3.0 | MIT License | https://pypi.org/project/oscrypto/1.3.0/#files |
 | packaging 26.3 | Apache-2.0 OR BSD-2-Clause | https://pypi.org/project/packaging/26.3/#files |
 | pefile 2024.8.26 | MIT | https://pypi.org/project/pefile/2024.8.26/#files |
@@ -58,7 +58,7 @@ TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-des
 | pyhanko-certvalidator 0.33.0 | MIT | https://pypi.org/project/pyhanko-certvalidator/0.33.0/#files |
 | pyinstaller 6.22.3 | GNU General Public License v2 (GPLv2) | https://pypi.org/project/pyinstaller/6.22.3/#files |
 | pymupdf 2.0 | Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License | https://pypi.org/project/pymupdf/2.0/#files |
-| pypdf 6.21.2 | BSD-3-Clause | https://pypi.org/project/pypdf/6.21.2/#files |
+| pypdf 6.21.4 | BSD-3-Clause | https://pypi.org/project/pypdf/6.21.4/#files |
 | pythonnet 3.2.1 | MIT | https://pypi.org/project/pythonnet/3.2.1/#files |
 | pywebview 6.2.1 | BSD License | https://pypi.org/project/pywebview/6.2.1/#files |
 | pywin32-ctypes 0.2.3 | BSD-3-Clause | https://pypi.org/project/pywin32-ctypes/0.2.3/#files |

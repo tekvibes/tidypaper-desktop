@@ -54,6 +54,8 @@ def _verdict(r: dict) -> tuple[str, str]:
         return "bad", "This signature couldn't be checked - the file may be damaged."
     if not r.get("intact"):
         return "bad", "The document was changed after it was signed - don't trust its contents."
+    if not r.get("valid"):
+        return "bad", "The signature itself doesn't check out, so it may be forged - don't trust the name or the contents."
     if r.get("modified_after") not in ("NONE", "LTA_UPDATES", None):
         return "warn", "The signature is intact, but someone added changes (such as form entries or notes) afterwards."
     if r.get("trusted"):
@@ -195,6 +197,9 @@ class SignMixin:
         sigs = list(r.embedded_signatures)
         if not 0 <= int(index) < len(sigs):
             raise UserError("That signature isn't in the file any more.")
+        checked = s.verify_pdf(path)
+        if int(index) >= len(checked) or _verdict(dict(checked[int(index)]))[0] != "ok":
+            raise UserError("That signature doesn't check out, so it can't be trusted from here.")
         cert = sigs[int(index)].signer_cert
         name = cert.subject.human_friendly
         cn = next((p.split(":", 1)[1].strip() for p in name.split(",") if p.strip().lower().startswith("common name")), name)

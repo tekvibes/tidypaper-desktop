@@ -549,7 +549,7 @@ function renderShield() {
   b.querySelector("use").setAttribute("href", bad ? "#i-shield-alert" : "#i-shield");
   const who = [...new Set(S.sigs.map(s => s.signer))];
   $("#signed-text").textContent = S.doc.dirty ? "Edits will break the signature"
-    : bad ? "Changed after signing" : `Signed by ${who.slice(0, 2).join(", ")}${who.length > 2 ? " +" + (who.length - 2) : ""}`;
+    : bad ? (S.sigs.some(s => s.forged) ? "Signature isn't valid" : "Changed after signing") : `Signed by ${who.slice(0, 2).join(", ")}${who.length > 2 ? " +" + (who.length - 2) : ""}`;
   fitToolbar();
 }
 $("#signed").addEventListener("click", () => {
@@ -558,6 +558,7 @@ $("#signed").addEventListener("click", () => {
   const s = S.sigs[0];
   toast(S.doc.dirty ? "This document is signed. Saving your edits makes a copy whose signature no longer checks out."
     : s.ok ? `Signed by ${s.signer}${s.when ? " on " + s.when : ""}. Nothing has changed since.`
+      : s.forged ? `The signature in the name of ${s.signer} isn't valid - it may be forged.`
       : `The signature by ${s.signer} doesn't match - the file was changed after it was signed.`);
 });
 

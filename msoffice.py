@@ -2,7 +2,8 @@
 
 Office is driven through COM from a hidden PowerShell process: paths travel in environment variables (no quoting
 problems), every dialog is switched off, and a document with a password fails instead of waiting for someone to
-type it.  If the person already has Word open, their documents are left alone and Word stays open.
+type it.  **Macros are switched off while a file is open** (AutomationSecurity 3): automated Office's own default
+is to run every one without asking - so a .docm from an email would run its code just by being opened here.  If the person already has Word open, their documents are left alone and Word stays open.
 
     available(kind)            kind = "word" | "excel" | "powerpoint"
     to_pdf(src, out, kind)     raises OfficeError with a plain-English sentence
@@ -60,43 +61,53 @@ _COMMON = r"""
 $ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'
 $src = $env:TP_SRC; $out = $env:TP_OUT; $nopw = 'tp-no-password'
 function Fail($m) { [Console]::Error.WriteLine($m); exit 3 }
+function NoMacros($a) {
+  $script:was = $a.AutomationSecurity
+  $a.AutomationSecurity = 3
+  if ([int]$a.AutomationSecurity -ne 3) { Fail 'MACROS' }
+}
+function MacrosAsBefore($a) { if ($null -ne $script:was) { $a.AutomationSecurity = $script:was } }
 """
 
 _SCRIPTS = {
     "word": _COMMON + r"""
 $app = New-Object -ComObject Word.Application
 try {
+  NoMacros $app
   $app.Visible = $false; $app.DisplayAlerts = 0
   try { $doc = $app.Documents.Open($src, $false, $true, $false, $nopw, $nopw) }
   catch { if ("$_" -match 'password') { Fail 'PASSWORD' } else { throw } }
   try { $doc.ExportAsFixedFormat($out, 17) } finally { $doc.Close(0) }
-} finally { if ($app.Documents.Count -eq 0) { $app.Quit() } }
+} finally { MacrosAsBefore $app; if ($app.Documents.Count -eq 0) { $app.Quit() } }
 """,
     "excel": _COMMON + r"""
 $app = New-Object -ComObject Excel.Application
 try {
+  NoMacros $app
   $app.Visible = $false; $app.DisplayAlerts = $false
   $missing = [System.Reflection.Missing]::Value
   try { $wb = $app.Workbooks.Open($src, 0, $true, $missing, $nopw, $nopw) }
   catch { if ("$_" -match 'password') { Fail 'PASSWORD' } else { throw } }
   try { $wb.ExportAsFixedFormat(0, $out) } finally { $wb.Close($false) }
-} finally { if ($app.Workbooks.Count -eq 0) { $app.Quit() } }
+} finally { MacrosAsBefore $app; if ($app.Workbooks.Count -eq 0) { $app.Quit() } }
 """,
     "powerpoint": _COMMON + r"""
 $app = New-Object -ComObject PowerPoint.Application
 try {
+  NoMacros $app
   try { $p = $app.Presentations.Open($src + '::' + $nopw + '::', -1, 0, 0) }
   catch { if ("$_" -match 'password') { Fail 'PASSWORD' } else { throw } }
   try { $p.SaveAs($out, 32) } finally { $p.Close() }
-} finally { if ($app.Presentations.Count -eq 0) { $app.Quit() } }
+} finally { MacrosAsBefore $app; if ($app.Presentations.Count -eq 0) { $app.Quit() } }
 """,
     "pdf2docx": _COMMON + r"""
 $app = New-Object -ComObject Word.Application
 try {
+  NoMacros $app
   $app.Visible = $false; $app.DisplayAlerts = 0
   $doc = $app.Documents.Open($src, $false, $false, $false, $nopw, $nopw)
   try { $doc.SaveAs2($out, 16) } finally { $doc.Close(0) }
-} finally { if ($app.Documents.Count -eq 0) { $app.Quit() } }
+} finally { MacrosAsBefore $app; if ($app.Documents.Count -eq 0) { $app.Quit() } }
 """,
 }
 

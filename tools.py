@@ -984,15 +984,20 @@ def unzip_files(files, opts, log):
             opener = pyzipper.AESZipFile
         except ImportError:
             opener = zipfile.ZipFile
-        with opener(f) as zf:
-            if password:
-                zf.setpassword(password)
-            for member in zf.infolist():
-                # guard against zip-slip paths
-                mp = Path(member.filename)
-                if mp.is_absolute() or ".." in mp.parts:
-                    continue
-                zf.extract(member, dest)
+        import safety
+        got = []
+        try:
+            with opener(f) as zf:
+                if password:
+                    zf.setpassword(password)
+                for member in zf.infolist():
+                    # guard against zip-slip paths
+                    mp = Path(member.filename)
+                    if mp.is_absolute() or ".." in mp.parts:
+                        continue
+                    got.append(Path(zf.extract(member, dest)))
+        finally:
+            safety.keep_mark(f, got)      # also when it stops half way: what is out is marked
         log(f"{f.name} -> {dest}")
         produced.append(dest)
     return produced
@@ -1020,6 +1025,9 @@ def _hms(t: str) -> str:
     raise ToolError(f"Time '{t}' should look like 1:23 or 0:01:23 or 83 (seconds)")
 
 
+FF_LOCAL = ["-protocol_whitelist", "file"]      # a "video" can be a playlist of web addresses: files only
+
+
 def media_convert(files, opts, log):
     ff = _ffmpeg()
     target = opts.get("format") or "MP4 (video)"
@@ -1038,7 +1046,7 @@ def media_convert(files, opts, log):
         else:
             t = out_path(f, opts, ext=".m4a"); args = ["-vn", "-c:a", "aac", "-b:a", "192k"]
         log(f"converting {f.name} ...")
-        r = _run([ff, "-y", "-hide_banner", "-loglevel", "error", "-i", str(f), *args, str(t)], timeout=3600)
+        r = _run([ff, "-y", "-hide_banner", "-loglevel", "error", *FF_LOCAL, "-i", str(f), *args, str(t)], timeout=3600)
         if r.returncode != 0:
             log(f"FAILED {f.name}: {r.stderr.strip()[-300:]}"); continue
         log(f"-> {t.name}"); produced.append(t)
@@ -1058,7 +1066,7 @@ def media_trim(files, opts, log):
             cmd += ["-ss", start]
         if end:
             cmd += ["-to", end]
-        cmd += ["-i", str(f), "-c", "copy", str(t)]
+        cmd += [*FF_LOCAL, "-i", str(f), "-c", "copy", str(t)]
         r = _run(cmd, timeout=3600)
         if r.returncode != 0:
             log(f"FAILED {f.name}: {r.stderr.strip()[-300:]}"); continue

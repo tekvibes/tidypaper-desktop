@@ -1,5 +1,5 @@
 # Core engine (tested)
-pypdf>=4.0
+pypdf>=6.21.4           # older: a made-up PDF can hang it (seven advisories)
 pillow>=10.0
 pillow-heif>=0.16
 openpyxl>=3.1
@@ -8,6 +8,7 @@ pymupdf>=1.24
 pyhanko>=0.21
 cryptography>=42
 anthropic>=2.0          # optional AI assistant (Claude); other providers use plain HTTPS
+opentelemetry-api>=1.45.2  # comes with anthropic; older: an advisory
 
 # Next phase: modern UI + packaging
 pywebview>=5.0

@@ -32,6 +32,7 @@ datas, binaries, hiddenimports = [], [], []
 # --- the web UI (index.html, css, js, fonts) lands in <bundle>/_internal/ui
 datas.append((str(ROOT / "ui"), "ui"))
 datas.append((str(BRAND_FILE), "."))
+datas.append((str(ROOT / "legal"), "legal"))        # Settings › About: the licence and the notices
 datas.append((str(ROOT / "prompts.json"), "."))     # what the AI is told (shared with the iPad app)
 
 # --- engine modules live at the repo root and are partly imported lazily
