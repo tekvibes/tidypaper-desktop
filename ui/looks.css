@@ -1,0 +1,127 @@
+/* Looks - three trial directions (see the Design canvas, Nov 2026), picked in Settings › Look.
+   <html data-look="..."> on top of app.css's own tokens: only the colour tokens, the font and the corner radius change,
+   never the layout.  No data-look (or "classic") = app.css as it was.  Each look has a light and a dark set; the dark set
+   follows data-theme exactly like app.css (Dark, or Auto when the computer is dark).
+   Fonts: SIL Open Font License, the licence beside each file in fonts/. */
+
+/* ---------------------------------------------------------------- A - Highlighter: ink navy, one bright yellow, Plus Jakarta Sans */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-display: swap;
+}
+:root[data-look="highlighter"] {
+    --font: "Plus Jakarta Sans";
+    --desk: #f6f7fb; --surface: #ffffff; --surface-2: #eef0f6; --surface-3: #e3e6ee;
+    --border: #d5dae6; --border-soft: #e3e6ee;
+    --text: #14213d; --text-2: #2d3a55; --muted: #5b6475; --faint: #98a1b3;
+    --accent: #2f5bea; --accent-soft: #e3eafd; --accent-text: #1e3fb8;
+    --primary: #14213d; --primary-text: #ffffff; --primary-hover: #22325a;
+    --pill: #14213d; --pill-text: #ffffff;
+    --hit: rgba(255, 212, 71, .6); --hit-current: rgba(255, 166, 0, .6);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-look="highlighter"]:not([data-theme="light"]) {
+    --desk: #0e1526; --surface: #18213a; --surface-2: #212b47; --surface-3: #2a3554;
+    --border: #2a3554; --border-soft: #222c47;
+    --text: #eef1f8; --text-2: #cbd2e2; --muted: #98a1b8; --faint: #69728a;
+    --accent: #7ea0ff; --accent-soft: #1e2d5c; --accent-text: #a9beff;
+    --primary: #ffd447; --primary-text: #14213d; --primary-hover: #ffe07a;
+    --pill: #ffd447; --pill-text: #14213d;
+  }
+}
+:root[data-look="highlighter"][data-theme="dark"] {
+    --desk: #0e1526; --surface: #18213a; --surface-2: #212b47; --surface-3: #2a3554;
+    --border: #2a3554; --border-soft: #222c47;
+    --text: #eef1f8; --text-2: #cbd2e2; --muted: #98a1b8; --faint: #69728a;
+    --accent: #7ea0ff; --accent-soft: #1e2d5c; --accent-text: #a9beff;
+    --primary: #ffd447; --primary-text: #14213d; --primary-hover: #ffe07a;
+    --pill: #ffd447; --pill-text: #14213d;
+}
+
+/* ---------------------------------------------------------------- B - Calm Teal: deep teal, coral for to-dos, rounder, Nunito Sans */
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("fonts/nunito-sans-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-display: swap;
+}
+:root[data-look="teal"] {
+    --font: "Nunito Sans";
+    --desk: #eef5f2; --surface: #ffffff; --surface-2: #e4efeb; --surface-3: #d3ebe5;
+    --border: #c6dcd5; --border-soft: #dce9e4;
+    --text: #17302d; --text-2: #2c4743; --muted: #50645f; --faint: #8aa19b;
+    --accent: #0e5c57; --accent-soft: #d3ebe5; --accent-text: #0a4440;
+    --primary: #0e5c57; --primary-text: #ffffff; --primary-hover: #0a4440;
+    --warn: #a63a22; --warn-bg: #fde7e1; --warn-border: #f6c4b7;
+    --pill: #17302d; --pill-text: #ffffff;
+    --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-look="teal"]:not([data-theme="light"]) {
+    --desk: #0d1a18; --surface: #152624; --surface-2: #1c302d; --surface-3: #243b37;
+    --border: #263d39; --border-soft: #1f3431;
+    --text: #e6f2ef; --text-2: #c2d6d1; --muted: #8fa8a2; --faint: #627a74;
+    --accent: #5fc9b9; --accent-soft: #143b37; --accent-text: #8edfd2;
+    --primary: #5fc9b9; --primary-text: #0a2421; --primary-hover: #7fd8ca;
+    --warn: #f59a84; --warn-bg: #3a1d16; --warn-border: #6b3427;
+    --pill: #e6f2ef; --pill-text: #17302d;
+  }
+}
+:root[data-look="teal"][data-theme="dark"] {
+    --desk: #0d1a18; --surface: #152624; --surface-2: #1c302d; --surface-3: #243b37;
+    --border: #263d39; --border-soft: #1f3431;
+    --text: #e6f2ef; --text-2: #c2d6d1; --muted: #8fa8a2; --faint: #627a74;
+    --accent: #5fc9b9; --accent-soft: #143b37; --accent-text: #8edfd2;
+    --primary: #5fc9b9; --primary-text: #0a2421; --primary-hover: #7fd8ca;
+    --warn: #f59a84; --warn-bg: #3a1d16; --warn-border: #6b3427;
+    --pill: #e6f2ef; --pill-text: #17302d;
+}
+
+/* ---------------------------------------------------------------- C - Midnight Folio: midnight desk, violet actions, mint for done, Manrope */
+@font-face {
+  font-family: "Manrope";
+  src: url("fonts/manrope-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-display: swap;
+}
+:root[data-look="midnight"] {
+    --font: "Manrope";
+    --desk: #f4f2ff; --surface: #ffffff; --surface-2: #eeebfb; --surface-3: #e3dff7;
+    --border: #d8d3f0; --border-soft: #e6e2f7;
+    --text: #17183a; --text-2: #33355e; --muted: #64688f; --faint: #9a9dbd;
+    --accent: #5b3fe0; --accent-soft: #e7e1ff; --accent-text: #4a2fc9;
+    --primary: #5b3fe0; --primary-text: #ffffff; --primary-hover: #4a2fc9;
+    --ok: #0b6b4b; --ok-bg: #d9fbef; --ok-border: #a7ecd2;
+    --pill: #17183a; --pill-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-look="midnight"]:not([data-theme="light"]) {
+    --desk: #0f1024; --surface: #1a1b3a; --surface-2: #25274d; --surface-3: #2e3060;
+    --border: #2e3060; --border-soft: #25274d;
+    --text: #eef0ff; --text-2: #d9dbf0; --muted: #a3a7c7; --faint: #6e7299;
+    --accent: #b7a8ff; --accent-soft: #2c2766; --accent-text: #d6cdff;
+    --primary: #5b3fe0; --primary-text: #ffffff; --primary-hover: #6c52ee;
+    --ok: #5ee6b5; --ok-bg: #123a30; --ok-border: #1e5a4a;
+    --pill: #eef0ff; --pill-text: #0f1024;
+    --paper-shadow: 0 1px 2px rgba(0,0,0,.6), 0 16px 40px rgba(0,0,0,.6);
+  }
+}
+:root[data-look="midnight"][data-theme="dark"] {
+    --desk: #0f1024; --surface: #1a1b3a; --surface-2: #25274d; --surface-3: #2e3060;
+    --border: #2e3060; --border-soft: #25274d;
+    --text: #eef0ff; --text-2: #d9dbf0; --muted: #a3a7c7; --faint: #6e7299;
+    --accent: #b7a8ff; --accent-soft: #2c2766; --accent-text: #d6cdff;
+    --primary: #5b3fe0; --primary-text: #ffffff; --primary-hover: #6c52ee;
+    --ok: #5ee6b5; --ok-bg: #123a30; --ok-border: #1e5a4a;
+    --pill: #eef0ff; --pill-text: #0f1024;
+    --paper-shadow: 0 1px 2px rgba(0,0,0,.6), 0 16px 40px rgba(0,0,0,.6);
+}
+
+/* ---------------------------------------------------------------- the mark beside the app's name: the look's own icon */
+:root[data-look="highlighter"] .brand .brand-mark { background: url("looks/highlighter-mark.png") center / cover; }
+:root[data-look="teal"] .brand .brand-mark { background: url("looks/teal-mark.png") center / cover; }
+:root[data-look="midnight"] .brand .brand-mark { background: url("looks/midnight-mark.png") center / cover; }
+:root[data-look="highlighter"] .brand .brand-mark svg, :root[data-look="teal"] .brand .brand-mark svg,
+:root[data-look="midnight"] .brand .brand-mark svg { visibility: hidden; }

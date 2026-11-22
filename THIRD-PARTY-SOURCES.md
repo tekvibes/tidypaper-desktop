@@ -1,0 +1,109 @@
+# Where the source is: TidyPaper 0.2.17 for Mac and for Windows
+
+TidyPaper's own source is this folder (https://github.com/tekvibes/tidypaper-desktop, tag v0.2.17). The source of what it is built with:
+
+## Python packages (versions of the Windows build)
+
+| Package | Licence | Source |
+|---|---|---|
+| aiohappyeyeballs 2.7.1 | Python Software Foundation License | https://pypi.org/project/aiohappyeyeballs/2.7.1/#files |
+| aiohttp 3.14.5 | Apache-2.0 AND MIT | https://pypi.org/project/aiohttp/3.14.5/#files |
+| aiosignal 1.4.0 | Apache Software License | https://pypi.org/project/aiosignal/1.4.0/#files |
+| altgraph 0.17.5 | MIT License | https://pypi.org/project/altgraph/0.17.5/#files |
+| annotated-types 0.8.0 | MIT | https://pypi.org/project/annotated-types/0.8.0/#files |
+| anthropic 2.3.0 | Apache Software License | https://pypi.org/project/anthropic/2.3.0/#files |
+| anyio 4.15.1 | MIT | https://pypi.org/project/anyio/4.15.1/#files |
+| asn1crypto 1.5.1 | MIT License | https://pypi.org/project/asn1crypto/1.5.1/#files |
+| attrs 26.1.0 | MIT | https://pypi.org/project/attrs/26.1.0/#files |
+| bottle 0.13.4 | MIT License | https://pypi.org/project/bottle/0.13.4/#files |
+| certifi 2026.10.23 | Mozilla Public License 2.0 (MPL 2.0) | https://pypi.org/project/certifi/2026.10.23/#files |
+| cffi 2.1.1 | MIT-0 | https://pypi.org/project/cffi/2.1.1/#files |
+| charset-normalizer 3.5.2 | MIT | https://pypi.org/project/charset-normalizer/3.5.2/#files |
+| click 8.5.0 | BSD-3-Clause | https://pypi.org/project/click/8.5.0/#files |
+| clr_loader 0.3.1 | see its source | https://pypi.org/project/clr_loader/0.3.1/#files |
+| cryptography 50.0.2 | Apache-2.0 OR BSD-3-Clause | https://pypi.org/project/cryptography/50.0.2/#files |
+| Cython 3.3.0 | Apache-2.0 | https://pypi.org/project/Cython/3.3.0/#files |
+| darkdetect 0.8.0 | BSD License | https://pypi.org/project/darkdetect/0.8.0/#files |
+| docstring_parser 0.18.0 | MIT License | https://pypi.org/project/docstring_parser/0.18.0/#files |
+| et_xmlfile 2.0.0 | MIT License | https://pypi.org/project/et_xmlfile/2.0.0/#files |
+| frozenlist 1.8.0 | Apache-2.0 | https://pypi.org/project/frozenlist/1.8.0/#files |
+| google-auth 2.62.0 | Apache Software License | https://pypi.org/project/google-auth/2.62.0/#files |
+| gunicorn 26.2.0 | MIT | https://pypi.org/project/gunicorn/26.2.0/#files |
+| h11 0.16.0 | MIT License | https://pypi.org/project/h11/0.16.0/#files |
+| httpcore2 2.16.0 | BSD-3-Clause | https://pypi.org/project/httpcore2/2.16.0/#files |
+| httpx2 2.16.0 | BSD-3-Clause | https://pypi.org/project/httpx2/2.16.0/#files |
+| idna 3.20 | BSD-3-Clause | https://pypi.org/project/idna/3.20/#files |
+| Jinja2 3.1.6 | BSD License | https://pypi.org/project/Jinja2/3.1.6/#files |
+| jiter 0.18.0 | MIT | https://pypi.org/project/jiter/0.18.0/#files |
+| lxml 6.1.3 | BSD-3-Clause | https://pypi.org/project/lxml/6.1.3/#files |
+| MarkupSafe 3.0.4 | BSD-3-Clause | https://pypi.org/project/MarkupSafe/3.0.4/#files |
+| multidict 7.2.1 | Apache-2.0 | https://pypi.org/project/multidict/7.2.1/#files |
+| numpy 2.5.4 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | https://pypi.org/project/numpy/2.5.4/#files |
+| openpyxl 3.1.5 | MIT License | https://pypi.org/project/openpyxl/3.1.5/#files |
+| opentelemetry-api 1.45.1 | Apache-2.0 | https://pypi.org/project/opentelemetry-api/1.45.1/#files |
+| oscrypto 1.3.0 | MIT License | https://pypi.org/project/oscrypto/1.3.0/#files |
+| packaging 26.3 | Apache-2.0 OR BSD-2-Clause | https://pypi.org/project/packaging/26.3/#files |
+| pefile 2024.8.26 | MIT | https://pypi.org/project/pefile/2024.8.26/#files |
+| pillow 13.0.0 | MIT-CMU | https://pypi.org/project/pillow/13.0.0/#files |
+| pillow_heif 1.8.1 | BSD-3-Clause | https://pypi.org/project/pillow_heif/1.8.1/#files |
+| propcache 0.5.4 | Apache-2.0 | https://pypi.org/project/propcache/0.5.4/#files |
+| proxy_tools 0.1.0 | MIT License | https://pypi.org/project/proxy_tools/0.1.0/#files |
+| psutil 7.2.2 | BSD-3-Clause | https://pypi.org/project/psutil/7.2.2/#files |
+| pyasn1 0.6.5 | BSD-2-Clause | https://pypi.org/project/pyasn1/0.6.5/#files |
+| pyasn1_modules 0.4.2 | BSD License | https://pypi.org/project/pyasn1_modules/0.4.2/#files |
+| pycparser 3.12 | BSD-3-Clause | https://pypi.org/project/pycparser/3.12/#files |
+| pydantic 2.14.1 | MIT | https://pypi.org/project/pydantic/2.14.1/#files |
+| pydantic_core 2.50.1 | MIT | https://pypi.org/project/pydantic_core/2.50.1/#files |
+| pyHanko 0.38.0 | MIT | https://pypi.org/project/pyHanko/0.38.0/#files |
+| pyhanko-certvalidator 0.33.0 | MIT | https://pypi.org/project/pyhanko-certvalidator/0.33.0/#files |
+| pyinstaller 6.22.3 | GNU General Public License v2 (GPLv2) | https://pypi.org/project/pyinstaller/6.22.3/#files |
+| pymupdf 2.0 | Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License | https://pypi.org/project/pymupdf/2.0/#files |
+| pypdf 6.21.2 | BSD-3-Clause | https://pypi.org/project/pypdf/6.21.2/#files |
+| pythonnet 3.2.1 | MIT | https://pypi.org/project/pythonnet/3.2.1/#files |
+| pywebview 6.2.1 | BSD License | https://pypi.org/project/pywebview/6.2.1/#files |
+| pywin32-ctypes 0.2.3 | BSD-3-Clause | https://pypi.org/project/pywin32-ctypes/0.2.3/#files |
+| PyYAML 6.0.3 | MIT License | https://pypi.org/project/PyYAML/6.0.3/#files |
+| reportlab 5.1.0 | BSD License | https://pypi.org/project/reportlab/5.1.0/#files |
+| requests 2.34.2 | Apache Software License | https://pypi.org/project/requests/2.34.2/#files |
+| setuptools 84.2.1 | MIT | https://pypi.org/project/setuptools/84.2.1/#files |
+| sniffio 1.3.1 | MIT License; Apache Software License | https://pypi.org/project/sniffio/1.3.1/#files |
+| threadpoolctl 3.7.0 | BSD-3-Clause | https://pypi.org/project/threadpoolctl/3.7.0/#files |
+| truststore 0.10.5 | MIT | https://pypi.org/project/truststore/0.10.5/#files |
+| typing-inspection 0.4.4 | MIT | https://pypi.org/project/typing-inspection/0.4.4/#files |
+| typing_extensions 4.16.0 | PSF-2.0 | https://pypi.org/project/typing_extensions/4.16.0/#files |
+| tzdata 2026.6 | Apache-2.0 | https://pypi.org/project/tzdata/2026.6/#files |
+| tzlocal 5.4.5 | MIT | https://pypi.org/project/tzlocal/5.4.5/#files |
+| uritools 6.1.3 | MIT | https://pypi.org/project/uritools/6.1.3/#files |
+| urllib3 2.8.0 | MIT | https://pypi.org/project/urllib3/2.8.0/#files |
+| winrt-runtime 4.1.0 | MIT | https://pypi.org/project/winrt-runtime/4.1.0/#files |
+| winrt-Windows.Foundation 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Foundation/4!10.0.28000.2957/#files |
+| winrt-Windows.Foundation.Collections 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Foundation.Collections/4!10.0.28000.2957/#files |
+| winrt-Windows.Globalization 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Globalization/4!10.0.28000.2957/#files |
+| winrt-Windows.Graphics.Imaging 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Graphics.Imaging/4!10.0.28000.2957/#files |
+| winrt-Windows.Media.Ocr 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Media.Ocr/4!10.0.28000.2957/#files |
+| winrt-Windows.Storage.Streams 4!10.0.28000.2957 | MIT | https://pypi.org/project/winrt-Windows.Storage.Streams/4!10.0.28000.2957/#files |
+| yarl 1.25.1 | Apache-2.0 | https://pypi.org/project/yarl/1.25.1/#files |
+
+## The rest
+
+| What | Licence | Source |
+|---|---|---|
+| MuPDF 1.28.5 (inside PyMuPDF, with its own third-party libraries in the same archive) | AGPL-3.0 | https://mupdf.com/downloads/archive/mupdf-1.28.5-source.tar.gz |
+| x265 4.3 (inside pillow-heif's wheel) | GPL-2.0-or-later, used here under GPL-3.0 | https://github.com/Multicorewareinc/x265/tree/4.3 |
+| libheif 1.23.6 (inside pillow-heif's wheel) | LGPL-3.0 | https://github.com/strukturag/libheif/tree/v1.23.6 |
+| libde265 1.1.3 (inside pillow-heif's wheel) | LGPL-3.0 | https://github.com/strukturag/libde265/tree/v1.1.3 |
+| GCC runtime and winpthreads (inside pillow-heif's Windows wheel) | GPL-3.0 with GCC exception; MIT and BSD | https://sourceforge.net/projects/mingw-w64/ and https://gcc.gnu.org/git.html |
+| Python 3.13.15 | PSF-2.0 | https://www.python.org/downloads/release/python-31315/ |
+| OpenSSL 3.0 | Apache-2.0 | https://github.com/openssl/openssl |
+| Tcl/Tk 8.6 | TCL | https://www.tcl-lang.org/software/tcltk/8.6.html |
+| PyInstaller's bootloader | GPL-2.0-or-later with an exception for the programs it bundles | https://github.com/pyinstaller/pyinstaller |
+| Microsoft Edge WebView2 SDK 1.0.3856.49 | BSD-3-Clause | https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.3856.49 |
+| Icons drawn after or taken from Lucide and Feather | ISC and MIT | https://github.com/lucide-icons/lucide |
+| KaTeX | MIT | https://github.com/KaTeX/KaTeX |
+| Inter, Manrope, Nunito Sans, Plus Jakarta Sans | OFL-1.1 | https://github.com/google/fonts |
+| Mac only: Tesseract and its English data (a separate program in the bundle) | Apache-2.0 | https://github.com/tesseract-ocr/tesseract, built by https://formulae.brew.sh/formula/tesseract |
+| Mac only: FFmpeg and its libraries (a separate program in the bundle) | GPL, as Homebrew builds it | https://ffmpeg.org/download.html, built by https://formulae.brew.sh/formula/ffmpeg |
+
+The Mac build uses the same packages as Homebrew and pip had them on the day it was built.
+
+If any of these addresses stops working, write to support@tekvibes.com for a copy of that source.

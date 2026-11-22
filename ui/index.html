@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tasks.css">
+<link rel="stylesheet" href="edit.css">
+<link rel="stylesheet" href="panels.css">
+<link rel="stylesheet" href="translate.css">
+<link rel="stylesheet" href="scan.css">
+<link rel="stylesheet" href="ai.css">
+<link rel="stylesheet" href="katex/katex.min.css">
+<link rel="stylesheet" href="fill.css">
+<link rel="stylesheet" href="extract.css">
+<link rel="stylesheet" href="reading.css">
+<link rel="stylesheet" href="tabs.css">
+<link rel="stylesheet" href="looks.css">
+</head>
+<body>
+
+<!-- Icon sprite: 24px stroke icons, referenced with <svg><use href="#i-name"/></svg> -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-select" viewBox="0 0 24 24"><path d="M4 3l7 17 2.5-7 7-2.5z"/></symbol>
+  <symbol id="i-markup" viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4z"/></symbol>
+  <symbol id="i-draw" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
+  <symbol id="i-edittext" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="m6 16 9.5-9.5a2.1 2.1 0 0 1 3 3L9 19H6z"/></symbol>
+  <symbol id="i-redact" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M3 13h12"/></symbol>
+  <symbol id="i-sign" viewBox="0 0 24 24"><path d="M3 17c3-6 5-6 6 0s3 6 5 0 3-6 7 0"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-pages" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-shield-alert" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-file-pdf" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-combine" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="10" rx="1"/><rect x="13" y="11" width="8" height="10" rx="1"/><path d="M7 17h3M17 7h-3"/><path d="m9 15 1 2-1 2M15 5l-1 2 1 2"/></symbol>
+  <symbol id="i-convert" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v6"/><path d="M14 3v5h5v11a2 2 0 0 1-2 2h-5"/><path d="M3 17h7"/><path d="m7 14 3 3-3 3"/></symbol>
+  <symbol id="i-compress" viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4"/><path d="m14 10 7-7M3 21l7-7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 9h10M7 12h10M7 15h6"/></symbol>
+  <symbol id="i-form" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8"/><rect x="8" y="11" width="8" height="3" rx=".5"/><path d="M8 17h4"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-rotate-r" viewBox="0 0 24 24"><path d="M21 4v6h-6"/><path d="M20 10A8 8 0 1 0 18 18"/></symbol>
+  <symbol id="i-rotate-l" viewBox="0 0 24 24"><path d="M3 4v6h6"/><path d="M4 10a8 8 0 1 1 2 8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-blank" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></symbol>
+  <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-folder-find" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v3"/><path d="M3 7v11a2 2 0 0 0 2 2h6"/><circle cx="17" cy="17" r="3"/><path d="m21 21-1.8-1.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></symbol>
+  <symbol id="i-underline" viewBox="0 0 24 24"><path d="M7 4v7a5 5 0 0 0 10 0V4"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-strike" viewBox="0 0 24 24"><path d="M16 6.5C15 5 13.6 4 11.8 4 9.4 4 7.5 5.5 7.5 7.6c0 1.6 1 2.6 3 3.4"/><path d="M4 12h16"/><path d="M8 17.5c1 1.6 2.6 2.5 4.4 2.5 2.6 0 4.6-1.6 4.6-3.8 0-.9-.3-1.6-.8-2.2"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.5"/></symbol>
+  <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="7"/></symbol>
+  <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19 19 5"/><path d="M10 5h9v9"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M4 4h16v11l-5 5H4z"/><path d="M15 20v-5h5"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-tick" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="currentColor"/></symbol>
+  <symbol id="i-initials" viewBox="0 0 24 24"><path d="M5 18 8 6l3 12M6 14h4"/><path d="M14 18c2-4 3-8 3-12M17 12c1 0 3 1 3 3s-2 3-3 3"/></symbol>
+  <symbol id="i-spread" viewBox="0 0 24 24"><rect x="2" y="5" width="9" height="14" rx="1"/><rect x="13" y="5" width="9" height="14" rx="1"/></symbol>
+  <symbol id="i-final" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="i-ask" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.6 9.5a2.5 2.5 0 0 1 4.8.9c0 1.6-2.4 2-2.4 3.4M12 16.5h.01"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></symbol>
+  <symbol id="i-contents" viewBox="0 0 24 24"><path d="M4 6h1M4 12h1M4 18h1M9 6h11M11 12h9M11 18h9"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M7.5 14h9"/></symbol>
+  <symbol id="i-focus" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/><circle cx="12" cy="12" r="2.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-translate" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.9 3.2 3.2 5.8 6.5 7.3M11 5c-.9 3.2-3.3 5.8-6.8 7.3M12.5 21l4-9 4 9M14 17.6h5"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></symbol>
+</svg>
+
+<!-- ================================================================ HOME -->
+<main id="home" class="view" aria-label="Home">
+  <header class="home-bar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg><use href="#i-file-pdf"/></svg></span>
+      <span class="brand-name app-name"></span>
+    </div>
+    <div class="home-right">
+    <div class="seg theme-seg" role="radiogroup" aria-label="Appearance">
+      <button role="radio" data-theme-choice="system" title="Match Windows"><svg><use href="#i-monitor"/></svg><span>Auto</span></button>
+      <button role="radio" data-theme-choice="light" title="Light"><svg><use href="#i-sun"/></svg><span>Light</span></button>
+      <button role="radio" data-theme-choice="dark" title="Dark"><svg><use href="#i-moon"/></svg><span>Dark</span></button>
+    </div>
+    <button class="btn btn-ghost" id="btn-settings-home" title="Settings"><svg><use href="#i-gear"/></svg>Settings</button>
+    </div>
+  </header>
+
+  <div class="home-scroll">
+    <div class="home-inner">
+      <section class="hero">
+        <h1>What would you like to do?</h1>
+        <p class="lead">Pick a task below, or drop a file anywhere in this window.
+          <button class="link-btn" id="sample-btn" type="button">New here? Try a sample</button></p>
+      </section>
+
+      <!-- the last document read, where you left it (ui/reading.js) -->
+      <div class="carry-on" id="carry-on" hidden>
+        <button class="carry-open" id="carry-open">
+          <span class="carry-icon" aria-hidden="true"><svg><use href="#i-bookmark"/></svg></span>
+          <span class="carry-text"><span class="carry-label">Carry on reading</span>
+            <span class="carry-name" id="carry-name"></span></span>
+          <span class="carry-page" id="carry-page"></span>
+          <svg class="carry-go" aria-hidden="true"><use href="#i-fwd"/></svg>
+        </button>
+        <button class="icon-btn sm" id="carry-forget" aria-label="Hide this" title="Hide this"><svg><use href="#i-x"/></svg></button>
+      </div>
+
+      <!-- Drop zone; swaps to suggestions after a drop -->
+      <section id="dropzone" class="dropzone" aria-live="polite">
+        <div class="dz-idle">
+          <span class="dz-icon" aria-hidden="true"><svg><use href="#i-drop"/></svg></span>
+          <div class="dz-copy">
+            <strong>Drop a file here</strong>
+            <span>PDFs, Word and Excel files, photos and scans</span>
+          </div>
+          <button class="btn btn-outline" id="scan-btn"><svg><use href="#i-scan"/></svg>Scan a paper document</button>
+          <button class="btn btn-outline" id="link-btn" title="A PDF or a webpage from the internet (Ctrl+Shift+O)"><svg><use href="#i-link"/></svg>Open a link…</button>
+          <button class="btn btn-primary" id="choose-file"><svg><use href="#i-open"/></svg>Choose a file…</button>
+        </div>
+        <div class="dz-suggest" hidden>
+          <div class="dz-files" id="dz-files"></div>
+          <p class="dz-q" id="dz-q">What would you like to do with it?</p>
+          <div class="dz-actions" id="dz-actions"></div>
+          <button class="btn btn-ghost dz-cancel" id="dz-cancel">Cancel</button>
+        </div>
+      </section>
+
+      <section class="tasks" aria-label="Tasks">
+        <!-- filled by app.js from TASKS -->
+      </section>
+
+      <button class="more-tools" id="more-tools">
+        <span><strong>More tools</strong> Split, watermark, page numbers, rename files, zip, video…</span>
+        <svg><use href="#i-fwd"/></svg>
+      </button>
+
+      <section class="recent" aria-labelledby="recent-h">
+        <h2 id="recent-h">Recent files</h2>
+        <ul id="recent-list" class="recent-list"></ul>
+        <p id="recent-empty" class="recent-empty" hidden>Files you open will appear here.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ================================================================ EDITOR -->
+<div id="editor" class="view" hidden>
+  <header class="toolbar" role="toolbar" aria-label="Editor">
+    <button class="icon-btn" id="btn-home" aria-label="Home - the open documents stay open" title="Home (Ctrl+T)"><svg><use href="#i-home"/></svg></button>
+    <button class="icon-btn" id="btn-open" aria-label="Open another PDF" title="Open (Ctrl+O)"><svg><use href="#i-open"/></svg></button>
+    <div class="doc-title">
+      <span id="doc-name" class="doc-name">Document.pdf</span>
+      <span id="doc-sub" class="doc-sub">Opened</span>
+    </div>
+    <span class="vsep"></span>
+    <div class="seg tools" id="tools" aria-label="Tools">
+      <button data-tool="select" aria-pressed="true" title="Select, fill in forms, pick text (V)"><svg><use href="#i-select"/></svg>Select</button>
+      <button data-tool="markup" title="Highlight, underline, strike through (H)"><svg><use href="#i-markup"/></svg>Mark up</button>
+      <button data-tool="draw" title="Pen, boxes, lines and arrows (D)"><svg><use href="#i-draw"/></svg>Draw</button>
+      <button data-tool="text" title="Text boxes, notes, pictures, links (T)"><svg><use href="#i-text"/></svg>Text</button>
+      <button data-tool="edittext" title="Change the document's own words (E)"><svg><use href="#i-edittext"/></svg>Edit text</button>
+      <button data-tool="redact" title="Remove text or areas for good (R)"><svg><use href="#i-redact"/></svg>Redact</button>
+      <button data-tool="sign" title="Your signature, or a digital signature (S)"><svg><use href="#i-sign"/></svg>Sign</button>
+    </div>
+    <span class="vsep"></span>
+    <button class="btn btn-ghost" id="btn-pages" aria-pressed="true" title="Show or hide the page list"><svg><use href="#i-pages"/></svg>Pages</button>
+    <button class="btn btn-ghost" id="btn-ask" aria-pressed="false" title="Ask about this document (AI)"><svg><use href="#i-ask"/></svg>Ask</button>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="btn-undo" aria-label="Undo" title="Undo (Ctrl+Z)"><svg><use href="#i-undo"/></svg></button>
+    <button class="icon-btn" id="btn-redo" aria-label="Redo" title="Redo (Ctrl+Y)"><svg><use href="#i-redo"/></svg></button>
+    <button class="icon-btn" id="btn-find" aria-label="Find text" title="Find (Ctrl+F)"><svg><use href="#i-search"/></svg></button>
+    <button class="icon-btn" id="btn-comments" aria-label="Comments and marks" title="Comments and marks" aria-pressed="false"><svg><use href="#i-note"/></svg></button>
+    <button class="icon-btn" id="btn-print" aria-label="Print" title="Print (Ctrl+P)"><svg><use href="#i-print"/></svg></button>
+    <span class="vsep"></span>
+    <button class="signed" id="signed" hidden><svg><use href="#i-shield"/></svg><span id="signed-text">Signed</span></button>
+    <button class="icon-btn" id="btn-more" aria-label="More" aria-haspopup="menu" title="More"><svg><use href="#i-more"/></svg></button>
+    <button class="btn btn-primary" id="btn-save" title="Save (Ctrl+S)">Save</button>
+  </header>
+
+  <div class="findbar" id="findbar" hidden>
+    <svg class="fb-icon"><use href="#i-search"/></svg>
+    <input id="find-input" type="search" placeholder="Find in document" aria-label="Find in document" autocomplete="off">
+    <span id="find-count" class="find-count"></span>
+    <button class="fb-opt" id="find-case" aria-pressed="false" title="Match capitals (Aa ≠ aa)" aria-label="Match case">Aa</button>
+    <button class="fb-opt" id="find-word" aria-pressed="false" title="Whole words only (cat, not cattle)" aria-label="Whole words"><u>ab</u></button>
+    <button class="icon-btn sm" id="find-list" aria-pressed="false" aria-label="List the matches by page" title="List the matches by page"><svg><use href="#i-list"/></svg></button>
+    <button class="icon-btn sm" id="find-prev" aria-label="Previous match"><svg><use href="#i-up"/></svg></button>
+    <button class="icon-btn sm" id="find-next" aria-label="Next match"><svg><use href="#i-down"/></svg></button>
+    <button class="icon-btn sm" id="find-close" aria-label="Close find"><svg><use href="#i-x"/></svg></button>
+    <div class="find-results" id="find-results" hidden role="listbox" aria-label="Matches by page"></div>
+  </div>
+
+  <div class="workspace">
+  <aside class="pagepanel" id="filmstrip" aria-label="Pages">
+    <div class="pp-head">
+      <div class="seg pp-seg" role="tablist" aria-label="Show">
+        <button role="tab" id="pp-tab-pages" aria-selected="true" aria-pressed="true">Pages</button>
+        <button role="tab" id="pp-tab-contents" aria-selected="false" aria-pressed="false">Contents</button>
+      </div>
+      <span class="spacer"></span>
+      <button class="icon-btn sm" id="pp-close" aria-label="Hide the page list" title="Hide the page list"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="pp-sub" id="pp-sub">
+      <span class="pp-count" id="pp-count"></span><span class="spacer"></span>
+      <button class="pp-filter" id="pp-marked" aria-pressed="false" hidden title="Show only the pages you bookmarked">
+        <svg><use href="#i-bookmark"/></svg><span>Bookmarked</span><b>0</b></button>
+    </div>
+    <div class="strip" id="strip" role="listbox" aria-label="Pages" aria-orientation="vertical"></div>
+    <div class="outline" id="outline" role="tree" aria-label="Contents" hidden></div>
+    <div class="grip pp-grip" id="pp-grip" role="separator" aria-orientation="vertical" aria-label="Page list width" tabindex="0"
+         title="Drag to make the page list wider or narrower (double-click to reset)"></div>
+  </aside>
+
+  <div class="stage">
+    <div class="subbar" id="subbar" hidden></div>
+    <div class="viewer" id="viewer" tabindex="0" aria-label="Document pages">
+      <div class="pages" id="pages"></div>
+    </div>
+
+    <div class="hud">
+      <span class="hud-page" id="hud-page">Page 1 of 1</span>
+      <div class="zoom" role="group" aria-label="Zoom">
+        <button class="icon-btn sm" id="zoom-out" aria-label="Zoom out" title="Zoom out (Ctrl −)"><svg><use href="#i-minus"/></svg></button>
+        <button class="zoom-val" id="zoom-val" aria-haspopup="menu" title="Zoom options">100%</button>
+        <button class="icon-btn sm" id="zoom-in" aria-label="Zoom in" title="Zoom in (Ctrl +)"><svg><use href="#i-plus"/></svg></button>
+      </div>
+    </div>
+
+    <div class="scrubber" id="scrubber" aria-hidden="true">
+      <div class="scrub-thumb" id="scrub-thumb"></div>
+      <div class="scrub-tip" id="scrub-tip" hidden>Page 1</div>
+    </div>
+  </div>
+  </div>
+
+  <footer class="statusbar">
+    <span id="status" class="status" role="status" aria-live="polite">Ready</span>
+    <span class="hint">Right-click a page to turn, copy, move or delete it · drag to reorder</span>
+  </footer>
+</div>
+
+<!-- ================================================================ OVERLAYS -->
+<div id="drag-overlay" class="drag-overlay" hidden>
+  <div class="drag-card"><svg><use href="#i-drop"/></svg><strong>Drop to open</strong></div>
+</div>
+
+<div id="menu" class="menu" role="menu" hidden></div>
+<div id="pill" class="pill" role="toolbar" aria-label="Actions" hidden></div>
+<div id="pop" class="pop" hidden></div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+  <svg class="toast-icon"><use href="#i-check"/></svg>
+  <span id="toast-msg"></span>
+  <span id="toast-actions" class="toast-actions"></span>
+  <button class="icon-btn sm" id="toast-close" aria-label="Dismiss"><svg><use href="#i-x"/></svg></button>
+</div>
+
+<dialog id="pw-dialog" class="dialog">
+  <form method="dialog" id="pw-form">
+    <div class="dlg-head"><span class="dlg-icon"><svg><use href="#i-lock"/></svg></span>
+      <div><h3>This PDF is locked</h3><p id="pw-name" class="muted"></p></div></div>
+    <label class="field"><span>Password</span><input id="pw-input" type="password" autocomplete="off"></label>
+    <p id="pw-error" class="field-error" hidden>That password didn't work. Check Caps Lock and try again.</p>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn btn-primary" value="ok" id="pw-ok">Open</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Open a link (ui/app.js openLink; bridge_open.py) -->
+<dialog id="link-dialog" class="dialog link-dialog" aria-labelledby="link-title">
+  <form id="link-form">
+    <div class="dlg-head"><span class="dlg-icon"><svg><use href="#i-link"/></svg></span>
+      <div><h3 id="link-title">Open a link</h3><p class="muted" id="link-sub">Paste the address of a PDF or a webpage.</p></div></div>
+    <label class="field" id="link-field"><span>Web address</span>
+      <input id="link-input" type="text" inputmode="url" placeholder="https://" autocomplete="url" spellcheck="false"></label>
+    <p class="link-msg" id="link-msg" role="status" aria-live="polite"></p>
+    <p class="muted small" id="link-note">A PDF is downloaded to your Downloads folder and opened. A webpage can be made into a PDF.</p>
+    <div class="dlg-actions" id="link-actions"></div>
+  </form>
+</dialog>
+
+<dialog id="details-dialog" class="dialog details-dialog" aria-labelledby="details-title">
+  <form method="dialog">
+    <div class="dlg-head"><span class="dlg-icon"><svg><use href="#i-info"/></svg></span>
+      <div><h3 id="details-title">Document details</h3><p class="muted" id="details-sub"></p></div></div>
+    <dl class="details" id="details-list"></dl>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" type="button" id="details-copy">Copy</button>
+      <button class="btn btn-primary" value="ok">Done</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dialog" class="dialog">
+  <form method="dialog">
+    <div class="dlg-head"><span class="dlg-icon warn"><svg><use href="#i-alert"/></svg></span>
+      <div><h3 id="confirm-title">Unsaved changes</h3><p id="confirm-msg" class="muted"></p></div></div>
+    <div class="dlg-actions" id="confirm-actions"></div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+<script src="tabs.js"></script>
+<script src="edit.js"></script>
+<script src="sign.js"></script>
+<script src="share.js"></script>
+<script src="panels.js"></script>
+<script src="scan.js"></script>
+<script src="settings.js"></script>
+<script src="katex/katex.min.js"></script>
+<script src="ai.js"></script>
+<script src="fill.js"></script>
+<script src="extract.js"></script>
+<script src="translate.js"></script>
+<script src="tasks.js"></script>
+<script src="reading.js"></script>
+<script src="shortcuts.js"></script>
+<script src="scanwords.js"></script>
+<script src="darkpages.js"></script>
+</body>
+</html>

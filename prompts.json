@@ -1,0 +1,1807 @@
+{
+  "_about": "Shared by the desktop app (bridge_ai.py) and the iPad/iPhone app (ios/), so both ask the AI the same way. Edit here, not in the code.",
+  "system": "You help someone understand a document they have open on their computer. They are not an expert, so answer in plain, friendly English and keep it short: lead with the direct answer, then the few details that matter.\n\nUse only the document below. If the answer isn't in it, say so plainly rather than guessing. Tables are given as rows (| Flat 1 | £937 | ...) under their column headings: read a value from its own row and column.\n\nPoint to where each fact comes from with a page marker like [p.3]. When an exact wording helps, quote a few words copied exactly from that page inside the marker, like [p.3: \"the notice period is 30 days\"] (under 15 words).\n\nIf the answer needs a formula or equation, write the maths in LaTeX between \\( and \\) inside a sentence, or between \\[ and \\] on its own line - for example \\(x^2 + 1\\). Write money, dates and ordinary numbers as plain text (£40, $5, 3 March), never as LaTeX.\n\nYou explain what the document says; you don't give legal, medical or financial advice. When a lot is at stake (money, deadlines, rights), add one short sentence suggesting they check with someone qualified.",
+  "modes": {
+    "summary": "Summarise this document in a few short bullet points: what it is, who it's from, and anything I need to do or pay, with dates.",
+    "todo": "What, if anything, do I need to do because of this document? List actions with deadlines, most urgent first.",
+    "dates": "List every date, deadline, amount of money and fee in this document, each with what it's for."
+  },
+  "card": {
+    "_about": "What does this letter want? - the letter card in Ask (desktop and iPad/iPhone).  The AI fills in this fixed shape (structured output); the app then checks amounts, the deadline and reference numbers against the pages' own text (bridge_card.py / LetterCard.swift) and says when one isn't there.  Fixture: ios/TidyPaperTests/Fixtures/card.json.",
+    "label": "What does it want?",
+    "prompt": "Fill in a card about this document for the person it was sent to, so they can see at a glance what it wants from them. Use only the document. Give each part the number of the page it is on, or an empty text and page 0 when the document doesn't say.\n- from: who sent it (the organisation or person, as they name themselves).\n- about: what it is, in one short plain sentence.\n- asks: what it asks the person to do, most urgent first, each a short instruction - at most 4. None if it asks for nothing.\n- deadline: the main date by which they must act - the date as YYYY-MM-DD, and the date copied as it is written.\n- amount: the main amount of money they must pay or will get, copied exactly as written (for example £186.40).\n- references: reference, account, case or policy numbers they may need to quote, each with its label and the value copied exactly - at most 4.\n- contact: the best way to contact the sender (a phone number, email or address), copied exactly.\n- next_step: the single most useful thing for them to do next, in one short sentence.\nCopy amounts, dates and numbers exactly as they are printed - never work one out or guess. Write in plain, friendly English. Answer only with the JSON.",
+    "answer_tokens": 1500,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "about",
+        "asks",
+        "deadline",
+        "amount",
+        "references",
+        "contact",
+        "next_step"
+      ],
+      "properties": {
+        "from": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "page"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "who sent it, as they name themselves"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        },
+        "about": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "page"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "what it is, in one short plain sentence"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        },
+        "asks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "page"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "one thing it asks the person to do, as a short instruction"
+              },
+              "page": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "deadline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "date",
+            "text",
+            "page"
+          ],
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "YYYY-MM-DD"
+            },
+            "text": {
+              "type": "string",
+              "description": "the date as written in the document"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        },
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "page"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "the main amount of money, exactly as written"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "value",
+              "page"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string",
+                "description": "copied exactly"
+              },
+              "page": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "page"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "how to contact the sender, copied exactly"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        },
+        "next_step": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "page"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "the single most useful thing to do next"
+            },
+            "page": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "explain": "Explain this part of the document in plain English (it is on page {page}):\n\n\"{selection}\"",
+  "explain_question": "\n\nMy question about it: {question}",
+  "picture_label": "Page {page}:",
+  "pictures_note": "These are pictures of the document's pages (it was scanned or photographed).",
+  "pictures_ack": "I can see the pages. What would you like to know?",
+  "max_chars": 120000,
+  "max_images": 20,
+  "image_edge": 1568,
+  "answer_tokens": 16000,
+  "history_messages": 8,
+  "stop_words": "a about all also an and any are as at be but by can could do does for from has have how i if in into is it its may me must my no not of on or our should so than that the their them then there these they this to was we were what when where which who why will with would you your yours",
+  "extract": {
+    "_about": "Pull out data (structured data from a PDF). Templates, the prompt and the answer's shape, shared by bridge_extract.py and ios/TidyPaper/Extract.swift. Keys are what the answer's JSON uses; labels are what people see. merge: which part of a long document wins for a single value (first / last). type: text, money, date, number.",
+    "system": "You copy data out of a document into a fixed JSON shape, for someone who will check it and put it in a spreadsheet.\n\nUse only the document. Copy each value exactly as printed - never work a number out, round it, or guess one. If a value isn't in the pages you were given, leave it as an empty string with page 0.\n\nMoney: digits with a decimal point, no currency sign and no thousands separators (1234.50). A minus sign only when the document shows the amount as negative (for example a balance that is overdrawn). Dates: YYYY-MM-DD when the day, month and year are all clear; otherwise copy the date as printed.\n\npage is the page number the value is printed on (the number in <page number=...> or the picture's label).\n\nIn doubts, list anything you were unsure of in a few words each (a smudged figure, a column you couldn't place) - or nothing.",
+    "pages_note": "These are pages {pages} of a {count}-page document. Fill in only what is on these pages; leave everything else empty.",
+    "own_rows_default": "item",
+    "chars_per_part": 24000,
+    "pages_per_part": 3,
+    "answer_tokens": 8000,
+    "_parallel": "Parts are sent a few at once (at_once; 1 to an AI on this computer). A template's parts all go together; everything in it reads the first part alone, then the rest together, each told the tables the first part found (known), so a table carried over keeps its name and columns. effort: how hard Claude thinks - low (tried 6 Nov 2026 on a real 4- and 12-page financial report through Haiku 5.5: the same figures as medium, as fast or faster, and fewer answers too long for one reply, as thinking shares the answer's room).",
+    "at_once": 4,
+    "effort": "low",
+    "missed": {
+      "_about": "Did it miss anything? After an AI run on real-text pages: the figures on each page (and, on the desktop, in each table its table finder sees) that turn up nowhere in the results. Same sentences on both platforms. not_printed: a figure in the results (a number column of a table, or a value that is plainly an amount) that is printed nowhere on its page or the pages either side - a misread, or a footnote mark run into it (\"480 (4)\" read as 4804); at most not_printed_max of them, then not_printed_more.",
+      "table": "A table on {where} is only partly in the results ({got} of its {count} figures) - check {that}.",
+      "page": "Page {page} has {count} figures, and only {got} of them are in the results - check that page.",
+      "table_share": 0.8,
+      "table_min": 4,
+      "page_share": 0.9,
+      "page_min": 8,
+      "not_printed": "{value} ({where}) isn't printed on page {page} - check it.",
+      "not_printed_max": 12,
+      "not_printed_more": "{count} more figures aren't printed on their pages - check the flagged tables.",
+      "second_look": 6
+    },
+    "all": {
+      "_about": "Everything in it: no template - the AI finds the tables and values and names them. The answer's shape is fixed (bridge_extract.schema_all); later parts are told the tables found so far (known) so a table carried over keeps its name and columns. Each table also has its footnotes, and each row the footnote marks printed by it (a mark is never part of a figure); they come out as a Footnote column and the footnotes under the table. pages_per_part: fewer pages per request than a template (dense pages ran out of answer room and dropped tables - a 10-Q, 6 Nov 2026). again: the second look - a text page the missed check flags is read once more on its own, and its reading is used when it has more of the page's figures (second_look: at most that many pages).",
+      "label": "Everything in it",
+      "about": "Every table, figure, date and name the AI finds - no template needed",
+      "values_label": "Details",
+      "system": "You copy data out of a document into a fixed JSON shape, for someone who will check it and put it in a spreadsheet or a database.\n\nUse only the document. Copy every value exactly as printed - the same digits, signs, brackets, commas and currency signs. Never work a number out, round it, convert it or guess one.\n\npage is the page number the value or row is printed on (the number in <page number=...> or the picture's label).\n\nIn doubts, list anything you were unsure of in a few words each (a smudged figure, a table you couldn't split into columns) - or nothing.",
+      "prompt": "Pull out everything in these pages that someone would want in a spreadsheet.\n\ntables: every table, with every row and every column. name: the table's title as printed, or a few words saying what it is. note: what is printed with it about units or periods (for example \"in millions, except per-share amounts\"), or \"\". columns: the column headings, left to right, as printed (\"\" for a column with no heading, such as the row labels). rows: one for each printed row, its cells in the same order as the columns. A row that is only a heading inside the table has its label in the first cell and the other cells empty. marks: the footnote marks printed by the row's label or figures - (1), *, †, ¹ - or \"\". A mark is never part of a figure: \"480 (4)\" is the figure 480 with the mark (4). footnotes: the table's footnotes, each with its mark and its words as printed.\n\nvalues: every figure, amount, date, name, party, address, reference or ID that is not in a table. section: the heading it is under, or \"\". label: what the document calls it. value: as printed. unit: the currency or scale when the document gives one (for example \"USD millions\"), or \"\".\n\ndocument_type: what the document is, in a few words (for example \"Quarterly earnings report\").\n\nLeave out running text - paragraphs and legal wording (a table's footnotes go with the table) - but take out a figure that is named in it (\"Revenue grew 12% to $4.2 billion\" gives Revenue growth: 12% and Revenue: $4.2 billion).",
+      "known": "These tables were found on earlier pages. If one carries on here, use exactly the same name and columns, and don't repeat its heading row. A new table with the same title but for another date or period is not a carry-on: put its date or period in its name.",
+      "again": "A first reading of this page left out some of its figures. Read it again carefully: every table on it, with every row and column, and every value.",
+      "pages_per_part": 2,
+      "footnote_label": "Footnote",
+      "example": "{\"document_type\": \"<what the document is>\", \"values\": [{\"section\": \"<heading it is under>\", \"label\": \"<what it is called>\", \"value\": \"<as printed>\", \"unit\": \"\", \"page\": 1}], \"tables\": [{\"name\": \"<title>\", \"note\": \"\", \"columns\": [\"\", \"<heading>\"], \"rows\": [{\"cells\": [\"<row label>\", \"<as printed>\"], \"marks\": \"\", \"page\": 1}], \"footnotes\": [{\"mark\": \"(1)\", \"text\": \"<as printed>\"}]}], \"doubts\": []}"
+    },
+    "templates": [
+      {
+        "id": "bank_statement",
+        "label": "Bank statement",
+        "about": "Transactions, opening and closing balance - checked against each other",
+        "fields": [
+          {
+            "key": "bank",
+            "label": "Bank"
+          },
+          {
+            "key": "account_name",
+            "label": "Account holder"
+          },
+          {
+            "key": "account_number",
+            "label": "Account number"
+          },
+          {
+            "key": "sort_code",
+            "label": "Sort code"
+          },
+          {
+            "key": "period_start",
+            "label": "From",
+            "type": "date"
+          },
+          {
+            "key": "period_end",
+            "label": "To",
+            "type": "date",
+            "merge": "last"
+          },
+          {
+            "key": "opening_balance",
+            "label": "Opening balance",
+            "type": "money"
+          },
+          {
+            "key": "closing_balance",
+            "label": "Closing balance",
+            "type": "money",
+            "merge": "last"
+          },
+          {
+            "key": "currency",
+            "label": "Currency"
+          }
+        ],
+        "rows": {
+          "label": "Transactions",
+          "one": "transaction",
+          "hint": "One row for each transaction, in the order printed. Money out and money in go in their own columns as positive amounts. Balance only where the statement prints one on that line. Leave out lines that only carry a balance forward (\"Balance brought forward\", \"Opening balance\", \"Closing balance\").",
+          "columns": [
+            {
+              "key": "date",
+              "label": "Date",
+              "type": "date"
+            },
+            {
+              "key": "description",
+              "label": "Description"
+            },
+            {
+              "key": "money_out",
+              "label": "Money out",
+              "type": "money"
+            },
+            {
+              "key": "money_in",
+              "label": "Money in",
+              "type": "money"
+            },
+            {
+              "key": "balance",
+              "label": "Balance",
+              "type": "money"
+            }
+          ]
+        }
+      },
+      {
+        "id": "invoice",
+        "label": "Invoice or receipt",
+        "about": "Supplier, date, amounts and VAT - checked that they add up",
+        "fields": [
+          {
+            "key": "supplier",
+            "label": "Supplier"
+          },
+          {
+            "key": "supplier_vat_number",
+            "label": "VAT number"
+          },
+          {
+            "key": "invoice_number",
+            "label": "Invoice or receipt number"
+          },
+          {
+            "key": "date",
+            "label": "Date",
+            "type": "date"
+          },
+          {
+            "key": "due_date",
+            "label": "Due date",
+            "type": "date"
+          },
+          {
+            "key": "customer",
+            "label": "Billed to"
+          },
+          {
+            "key": "net",
+            "label": "Net (before VAT)",
+            "type": "money",
+            "merge": "last"
+          },
+          {
+            "key": "vat",
+            "label": "VAT",
+            "type": "money",
+            "merge": "last"
+          },
+          {
+            "key": "total",
+            "label": "Total",
+            "type": "money",
+            "merge": "last"
+          },
+          {
+            "key": "currency",
+            "label": "Currency"
+          }
+        ],
+        "rows": {
+          "label": "Items",
+          "one": "item",
+          "hint": "One row for each item or service charged, in the order printed. Amount is the line's own total as printed. Leave out the subtotal, VAT and total lines.",
+          "columns": [
+            {
+              "key": "description",
+              "label": "Description"
+            },
+            {
+              "key": "quantity",
+              "label": "Quantity",
+              "type": "number"
+            },
+            {
+              "key": "unit_price",
+              "label": "Unit price",
+              "type": "money"
+            },
+            {
+              "key": "amount",
+              "label": "Amount",
+              "type": "money"
+            }
+          ]
+        }
+      },
+      {
+        "id": "payslip",
+        "label": "Payslip",
+        "about": "Employer, pay date, gross and net pay, tax and deductions",
+        "fields": [
+          {
+            "key": "employer",
+            "label": "Employer"
+          },
+          {
+            "key": "employee",
+            "label": "Employee"
+          },
+          {
+            "key": "pay_date",
+            "label": "Pay date",
+            "type": "date"
+          },
+          {
+            "key": "period",
+            "label": "Pay period"
+          },
+          {
+            "key": "tax_code",
+            "label": "Tax code"
+          },
+          {
+            "key": "ni_number",
+            "label": "National Insurance number"
+          },
+          {
+            "key": "gross_pay",
+            "label": "Gross pay",
+            "type": "money"
+          },
+          {
+            "key": "total_deductions",
+            "label": "Total deductions",
+            "type": "money"
+          },
+          {
+            "key": "net_pay",
+            "label": "Net pay",
+            "type": "money"
+          }
+        ],
+        "rows": {
+          "label": "Payments and deductions",
+          "one": "line",
+          "hint": "One row for each payment (salary, overtime, bonus...) and each deduction (income tax, National Insurance, pension, student loan...) for this pay period, in the order printed. Put the amount in Payment or Deduction as a positive number. Leave out year-to-date figures and totals.",
+          "columns": [
+            {
+              "key": "description",
+              "label": "Description"
+            },
+            {
+              "key": "payment",
+              "label": "Payment",
+              "type": "money"
+            },
+            {
+              "key": "deduction",
+              "label": "Deduction",
+              "type": "money"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "translate": {
+    "_about": "Translate: a document's pages into another language, a page per request, shown beside the document (bridge_translate.py, ios/TidyPaper/Translate.swift). code: the language's BCP-47 code (Apple's on-device Translation uses it on the iPhone/iPad). languages: the short list offered first (own: its own name; aliases: other usual names). other_languages: every other language that can be typed or picked under Other language (build/make_languages.py writes both from Apple's list; sample: a few letters for the PDF font checks).",
+    "system": "You translate documents for someone who can't read the language they are written in.\n\nTranslate everything on the page into {language}, faithfully and completely - every heading, sentence, table row, footnote and line of small print. Keep names, numbers, amounts, dates, reference numbers, addresses and email addresses exactly as printed. Leave out the page's own page number.\n\nKeep the page's layout: write each paragraph as one line - join lines the page only broke because it ran out of room - with a blank line between paragraphs, but keep lines that stand on their own (an address, a date, lines of details, a signature) on lines of their own. Put a heading on its own line starting with \"# \" (a smaller heading with \"## \"), each bullet point on its own line starting with \"- \", and a table as one row per line with its cells separated by \" | \" - only for a real table, not for a line of small print with | between items. Keep numbered items' numbers as they are. No other Markdown (no bold, italics or links), no explanations, no notes and no summary, and don't say what language it was in. If some words can't be read, write [unreadable]. If the page is already in {language}, copy it as it is.",
+    "prompt": "Translate page {page} of \"{name}\" into {language}. Answer with the translation only.",
+    "pictures_prompt": "The picture is page {page} of \"{name}\". Read it and translate it into {language}. Answer with the translation only.",
+    "answer_tokens": 8000,
+    "_parallel": "Pages are sent a few at once (at_once). Before a long document (2+ pages, notes_min_chars or more) one small request writes notes (a glossary and the tone) that every page is then given, so pages translated at the same time read as one translation; each page is also given the end of the page before and the start of the page after (context_chars, from the original), so a sentence split by a page break is translated whole on the page it starts on.",
+    "at_once": 4,
+    "context_chars": 600,
+    "notes_min_chars": 3000,
+    "notes_chars": 40000,
+    "notes_tokens": 1500,
+    "notes_limit": 3000,
+    "notes_system": "You help a team of translators who each translate a few pages of the same document into {language} at the same time. You write the short notes they all follow, so that the pages read as one translation.",
+    "notes_prompt": "Above are the words of \"{name}\" (long pages shortened). Write the notes for translating it into {language}.\n\nFirst line: \"Tone: \" and how to address the reader in {language} - formally or informally, and which form (for example Sie or du, vous or tu) - as the document does.\n\nThen up to 30 lines, one for each important term that comes up more than once or could be translated more than one way - defined terms, the roles of the people in it (such as landlord and tenant), the names of forms, schemes, benefits and offices - each as: original → {language}\n\nLeave out the names of people and companies (they stay as printed). Answer with the notes only.",
+    "notes_block": "Notes for this document - follow them, so that every page is translated the same way:\n<notes>\n{notes}\n</notes>",
+    "before_block": "The end of page {prev}, for context only - don't translate it:\n<before>\n{text}\n</before>",
+    "after_block": "The start of page {next}, for context only - don't translate it:\n<after>\n{text}\n</after>",
+    "skip_start": "If page {page} starts by finishing a sentence from the end of page {prev}, leave out those first words - the translation of page {prev} finishes that sentence.",
+    "finish_end": "If page {page} ends part way through a sentence that carries on at the start of page {next}, translate the whole sentence, finishing it with the words from page {next}.",
+    "languages": [
+      {
+        "name": "English",
+        "code": "en",
+        "own": "English",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Arabic",
+        "code": "ar",
+        "own": "العربية",
+        "script": "Arab",
+        "sample": "ءآأؤإئابةتثج"
+      },
+      {
+        "name": "Bengali",
+        "code": "bn",
+        "own": "বাংলা",
+        "aliases": [
+          "Bangla"
+        ],
+        "script": "Beng",
+        "sample": "ঁংঃঅআইঈউঊঋঌএ"
+      },
+      {
+        "name": "Chinese (Simplified)",
+        "code": "zh-Hans",
+        "own": "简体中文",
+        "aliases": [
+          "Chinese",
+          "Mandarin",
+          "Simplified Chinese"
+        ],
+        "script": "Hans",
+        "sample": "一丁七万丈三上下丌不与丑"
+      },
+      {
+        "name": "Chinese (Traditional)",
+        "code": "zh-Hant",
+        "own": "繁體中文",
+        "aliases": [
+          "Chinese",
+          "Traditional Chinese"
+        ],
+        "script": "Hant",
+        "sample": "一丁七万丈三上下丌不与丑"
+      },
+      {
+        "name": "Dutch",
+        "code": "nl",
+        "own": "Nederlands",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Farsi",
+        "code": "fa",
+        "own": "فارسی",
+        "aliases": [
+          "Persian"
+        ],
+        "script": "Arab",
+        "sample": "ءآأؤئابةتثجح"
+      },
+      {
+        "name": "French",
+        "code": "fr",
+        "own": "français",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "German",
+        "code": "de",
+        "own": "Deutsch",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Greek",
+        "code": "el",
+        "own": "Ελληνικά",
+        "script": "Grek",
+        "sample": "ΆΈΉΊΌΎΏΐΑΒΓΔ"
+      },
+      {
+        "name": "Gujarati",
+        "code": "gu",
+        "own": "ગુજરાતી",
+        "script": "Gujr",
+        "sample": "ઁંઃઅઆઇઈઉઊઋઍએ"
+      },
+      {
+        "name": "Hindi",
+        "code": "hi",
+        "own": "हिन्दी",
+        "script": "Deva",
+        "sample": "ँंःअआइईउऊऋऌऍ"
+      },
+      {
+        "name": "Indonesian",
+        "code": "id",
+        "own": "Indonesia",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Italian",
+        "code": "it",
+        "own": "italiano",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Japanese",
+        "code": "ja",
+        "own": "日本語",
+        "script": "Jpan",
+        "sample": "々ぁあぃいぅうぇえぉおか"
+      },
+      {
+        "name": "Kannada",
+        "code": "kn",
+        "own": "ಕನ್ನಡ",
+        "script": "Knda",
+        "sample": "ಂಃಅಆಇಈಉಊಋಌಎಏ"
+      },
+      {
+        "name": "Korean",
+        "code": "ko",
+        "own": "한국어",
+        "script": "Kore",
+        "sample": "가각갂갃간갅갆갇갈갉갊갋"
+      },
+      {
+        "name": "Malayalam",
+        "code": "ml",
+        "own": "മലയാളം",
+        "script": "Mlym",
+        "sample": "ംഃഅആഇഈഉഊഋഎഏഐ"
+      },
+      {
+        "name": "Marathi",
+        "code": "mr",
+        "own": "मराठी",
+        "script": "Deva",
+        "sample": "ंःअआइईउऊऋऌएऐ"
+      },
+      {
+        "name": "Polish",
+        "code": "pl",
+        "own": "polski",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Portuguese",
+        "code": "pt",
+        "own": "português",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Punjabi",
+        "code": "pa",
+        "own": "ਪੰਜਾਬੀ",
+        "aliases": [
+          "Panjabi"
+        ],
+        "script": "Guru",
+        "sample": "ਂਅਆਇਈਉਊਏਐਓਔਕ"
+      },
+      {
+        "name": "Romanian",
+        "code": "ro",
+        "own": "română",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Russian",
+        "code": "ru",
+        "own": "русский",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Somali",
+        "code": "so",
+        "own": "Soomaali",
+        "script": "Latn",
+        "sample": "BCDFGHJKLMNQ"
+      },
+      {
+        "name": "Spanish",
+        "code": "es",
+        "own": "español",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Tamil",
+        "code": "ta",
+        "own": "தமிழ்",
+        "script": "Taml",
+        "sample": "ஃஅஆஇஈஉஊஎஏஐஒஓ"
+      },
+      {
+        "name": "Telugu",
+        "code": "te",
+        "own": "తెలుగు",
+        "script": "Telu",
+        "sample": "ఁంఃఅఆఇఈఉఊఋఌఎ"
+      },
+      {
+        "name": "Thai",
+        "code": "th",
+        "own": "ไทย",
+        "script": "Thai",
+        "sample": "กขฃคฅฆงจฉชซฌ"
+      },
+      {
+        "name": "Turkish",
+        "code": "tr",
+        "own": "Türkçe",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Ukrainian",
+        "code": "uk",
+        "own": "українська",
+        "script": "Cyrl",
+        "sample": "ʼЄІЇАБВГДЕЖЗ"
+      },
+      {
+        "name": "Urdu",
+        "code": "ur",
+        "own": "اردو",
+        "script": "Aran",
+        "sample": "ءابتثجحخدذرز"
+      },
+      {
+        "name": "Vietnamese",
+        "code": "vi",
+        "own": "Tiếng Việt",
+        "script": "Latn",
+        "sample": "ABCDEGHIKLMN"
+      },
+      {
+        "name": "Welsh",
+        "code": "cy",
+        "own": "Cymraeg",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJLM"
+      }
+    ],
+    "other_languages": [
+      {
+        "name": "Abkhazian",
+        "own": "Abkhazian",
+        "code": "ab",
+        "script": "Cyrl",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Afar",
+        "own": "Afar",
+        "code": "aa",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Afrikaans",
+        "own": "Afrikaans",
+        "code": "af",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Akan",
+        "own": "Akan",
+        "code": "ak",
+        "script": "Latn",
+        "sample": "ABDEFGHIKLMN"
+      },
+      {
+        "name": "Albanian",
+        "own": "shqip",
+        "code": "sq",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Amharic",
+        "own": "አማርኛ",
+        "code": "am",
+        "script": "Ethi",
+        "sample": "ሀሁሂሃሄህሆለሉሊላሌ"
+      },
+      {
+        "name": "Aragonese",
+        "own": "Aragonese",
+        "code": "an",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Armenian",
+        "own": "հայերեն",
+        "code": "hy",
+        "script": "Armn",
+        "sample": "ԱԲԳԴԵԶԷԸԹԺԻԼ"
+      },
+      {
+        "name": "Assamese",
+        "own": "অসমীয়া",
+        "code": "as",
+        "script": "Beng",
+        "sample": "ঁংঃঅআইঈউঊঋএঐ"
+      },
+      {
+        "name": "Avaric",
+        "own": "Avaric",
+        "code": "av",
+        "script": "Cyrl",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Aymara",
+        "own": "Aymara",
+        "code": "ay",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Azerbaijani",
+        "own": "azərbaycan",
+        "code": "az",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL",
+        "aliases": [
+          "Azeri"
+        ]
+      },
+      {
+        "name": "Bambara",
+        "own": "bamanakan",
+        "code": "bm",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Bashkir",
+        "own": "башҡорт",
+        "code": "ba",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Basque",
+        "own": "euskara",
+        "code": "eu",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Belarusian",
+        "own": "беларуская",
+        "code": "be",
+        "script": "Cyrl",
+        "sample": "ЁІЎАБВГДЕЖЗЙ"
+      },
+      {
+        "name": "Bislama",
+        "own": "Bislama",
+        "code": "bi",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Bosnian",
+        "own": "bosanski",
+        "code": "bs",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Breton",
+        "own": "brezhoneg",
+        "code": "br",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Bulgarian",
+        "own": "български",
+        "code": "bg",
+        "script": "Cyrl",
+        "sample": "АБВГДЕЖЗИЙКЛ"
+      },
+      {
+        "name": "Burmese",
+        "own": "မြန်မာ",
+        "code": "my",
+        "script": "Mymr",
+        "sample": "ကခဂဃငစဆဇဈဉညဋ",
+        "aliases": [
+          "Myanmar"
+        ]
+      },
+      {
+        "name": "Cantonese",
+        "own": "廣東話",
+        "code": "yue",
+        "script": "Hant",
+        "sample": "一丁七丈三上下丌不丑且世"
+      },
+      {
+        "name": "Catalan",
+        "own": "català",
+        "code": "ca",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Cebuano",
+        "own": "Cebuano",
+        "code": "ceb",
+        "script": "Latn",
+        "sample": "ABDEGHIKLMNO"
+      },
+      {
+        "name": "Chamorro",
+        "own": "Chamorro",
+        "code": "ch",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Chechen",
+        "own": "нохчийн",
+        "code": "ce",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Chuvash",
+        "own": "чӑваш чӗлхи",
+        "code": "cv",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Cornish",
+        "own": "kernewek",
+        "code": "kw",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Corsican",
+        "own": "corsu",
+        "code": "co",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJLM"
+      },
+      {
+        "name": "Cree",
+        "own": "Cree",
+        "code": "cr",
+        "script": "Cans",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Croatian",
+        "own": "hrvatski",
+        "code": "hr",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Czech",
+        "own": "čeština",
+        "code": "cs",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Danish",
+        "own": "dansk",
+        "code": "da",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Dhivehi",
+        "own": "ދިވެހިބަސް",
+        "code": "dv",
+        "script": "Thaa",
+        "sample": "ހށނރބޅކއވމފދ"
+      },
+      {
+        "name": "Dzongkha",
+        "own": "རྫོང་ཁ་",
+        "code": "dz",
+        "script": "Tibt",
+        "sample": "ཀཁགངཅཆཇཉཏཐདན"
+      },
+      {
+        "name": "Esperanto",
+        "own": "Esperanto",
+        "code": "eo",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Estonian",
+        "own": "eesti",
+        "code": "et",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Ewe",
+        "own": "eʋegbe",
+        "code": "ee",
+        "script": "Latn",
+        "sample": "ABDEFGHIKLMN"
+      },
+      {
+        "name": "Faroese",
+        "own": "føroyskt",
+        "code": "fo",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Fijian",
+        "own": "Fijian",
+        "code": "fj",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Filipino",
+        "own": "Filipino",
+        "code": "fil",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL",
+        "aliases": [
+          "Tagalog"
+        ]
+      },
+      {
+        "name": "Finnish",
+        "own": "suomi",
+        "code": "fi",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Fula",
+        "own": "Pulaar",
+        "code": "ff",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Galician",
+        "own": "galego",
+        "code": "gl",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Ganda",
+        "own": "Luganda",
+        "code": "lg",
+        "script": "Latn",
+        "sample": "ABCDEFGIJKLM"
+      },
+      {
+        "name": "Georgian",
+        "own": "ქართული",
+        "code": "ka",
+        "script": "Geor",
+        "sample": "აბგდევზთიკლმ"
+      },
+      {
+        "name": "Guarani",
+        "own": "avañe’ẽ",
+        "code": "gn",
+        "script": "Latn",
+        "sample": "ABCDEGHIJKLM"
+      },
+      {
+        "name": "Haitian Creole",
+        "own": "Kreyòl Ayisyen",
+        "code": "ht",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL",
+        "aliases": [
+          "Creole",
+          "Kreyol"
+        ]
+      },
+      {
+        "name": "Hausa",
+        "own": "Hausa",
+        "code": "ha",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Hawaiian",
+        "own": "ʻŌlelo Hawaiʻi",
+        "code": "haw",
+        "script": "Latn",
+        "sample": "AEHIKLMNOPUW"
+      },
+      {
+        "name": "Hebrew",
+        "own": "עברית",
+        "code": "he",
+        "script": "Hebr",
+        "sample": "אבגדהוזחטיךכ"
+      },
+      {
+        "name": "Herero",
+        "own": "Herero",
+        "code": "hz",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Hiri Motu",
+        "own": "Hiri Motu",
+        "code": "ho",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Hungarian",
+        "own": "magyar",
+        "code": "hu",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Icelandic",
+        "own": "íslenska",
+        "code": "is",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Igbo",
+        "own": "Igbo",
+        "code": "ig",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Inuktitut",
+        "own": "ᐃᓄᒃᑎᑐᑦ",
+        "code": "iu",
+        "script": "Cans",
+        "sample": "ᐃᐄᐅᐆᐊᐋᐱᐲᐳᐴᐸᐹ"
+      },
+      {
+        "name": "Inupiaq",
+        "own": "Inupiaq",
+        "code": "ik",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Irish",
+        "own": "Gaeilge",
+        "code": "ga",
+        "script": "Latn",
+        "sample": "ABCDEFGHILMN",
+        "aliases": [
+          "Gaelic (Irish)"
+        ]
+      },
+      {
+        "name": "Javanese",
+        "own": "Jawa",
+        "code": "jv",
+        "script": "Latn",
+        "sample": "ABCDEGHIJKLM"
+      },
+      {
+        "name": "Kalaallisut",
+        "own": "kalaallisut",
+        "code": "kl",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Kanuri",
+        "own": "Kanuri",
+        "code": "kr",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Kashmiri",
+        "own": "کٲشُر",
+        "code": "ks",
+        "script": "Aran",
+        "sample": "ؠءآأؤابتثجحخ"
+      },
+      {
+        "name": "Kazakh",
+        "own": "қазақ тілі",
+        "code": "kk",
+        "script": "Cyrl",
+        "sample": "ЁІАБВГДЕЖЗИЙ"
+      },
+      {
+        "name": "Khmer",
+        "own": "ខ្មែរ",
+        "code": "km",
+        "script": "Khmr",
+        "sample": "កខគឃងចឆជឈញដឋ"
+      },
+      {
+        "name": "Kikuyu",
+        "own": "Gikuyu",
+        "code": "ki",
+        "script": "Latn",
+        "sample": "ABCDEGHIJKMN"
+      },
+      {
+        "name": "Kinyarwanda",
+        "own": "Ikinyarwanda",
+        "code": "rw",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Komi",
+        "own": "Komi",
+        "code": "kv",
+        "script": "Cyrl",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Kongo",
+        "own": "Kongo",
+        "code": "kg",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Kuanyama",
+        "own": "Kuanyama",
+        "code": "kj",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Kurdish",
+        "own": "kurdî (kurmancî)",
+        "code": "ku",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL",
+        "aliases": [
+          "Kurmanji"
+        ]
+      },
+      {
+        "name": "Kurdish (Sorani)",
+        "own": "کوردیی ناوەندی",
+        "code": "ckb",
+        "script": "Arab",
+        "sample": "ئابتجحخدرزسش",
+        "aliases": [
+          "Sorani"
+        ]
+      },
+      {
+        "name": "Kyrgyz",
+        "own": "кыргызча",
+        "code": "ky",
+        "script": "Cyrl",
+        "sample": "ЁАБГДЕЖЗИЙКЛ",
+        "aliases": [
+          "Kirghiz"
+        ]
+      },
+      {
+        "name": "Lao",
+        "own": "ລາວ",
+        "code": "lo",
+        "script": "Laoo",
+        "sample": "ກຂຄງຈຊຍດຕຖທນ"
+      },
+      {
+        "name": "Latin",
+        "own": "Latin",
+        "code": "la",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Latvian",
+        "own": "latviešu",
+        "code": "lv",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Liangshan Yi",
+        "own": "ꆈꌠꉙ",
+        "code": "ii",
+        "script": "Yiii",
+        "sample": "ꀀꀁꀂꀃꀄꀅꀆꀇꀈꀉꀊꀋ"
+      },
+      {
+        "name": "Limburgish",
+        "own": "Limburgish",
+        "code": "li",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Lingala",
+        "own": "lingála",
+        "code": "ln",
+        "script": "Latn",
+        "sample": "ABCDEFGHIKLM"
+      },
+      {
+        "name": "Lithuanian",
+        "own": "lietuvių",
+        "code": "lt",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Luba-Katanga",
+        "own": "Tshiluba",
+        "code": "lu",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Luxembourgish",
+        "own": "Lëtzebuergesch",
+        "code": "lb",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Macedonian",
+        "own": "македонски",
+        "code": "mk",
+        "script": "Cyrl",
+        "sample": "ЃЅЈЉЊЌЏАБВГД"
+      },
+      {
+        "name": "Malagasy",
+        "own": "Malagasy",
+        "code": "mg",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Malay",
+        "own": "Bahasa Melayu",
+        "code": "ms",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Maltese",
+        "own": "Malti",
+        "code": "mt",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Manx",
+        "own": "Gaelg",
+        "code": "gv",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Marshallese",
+        "own": "Marshallese",
+        "code": "mh",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Mongolian",
+        "own": "монгол",
+        "code": "mn",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Māori",
+        "own": "Māori",
+        "code": "mi",
+        "script": "Latn",
+        "sample": "AEGHIKMNOPRT"
+      },
+      {
+        "name": "Nauru",
+        "own": "Nauru",
+        "code": "na",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Navajo",
+        "own": "Diné Bizaad",
+        "code": "nv",
+        "script": "Latn",
+        "sample": "ABCDEGHIJKLM"
+      },
+      {
+        "name": "Ndonga",
+        "own": "Ndonga",
+        "code": "ng",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Nepali",
+        "own": "नेपाली",
+        "code": "ne",
+        "script": "Deva",
+        "sample": "ँंःअआइईउऊऋऌऍ"
+      },
+      {
+        "name": "North Ndebele",
+        "own": "isiNdebele",
+        "code": "nd",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "North Sámi",
+        "own": "davvisámegiella",
+        "code": "se",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Norwegian",
+        "own": "norsk",
+        "code": "no",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Norwegian Bokmål",
+        "own": "norsk bokmål",
+        "code": "nb",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Norwegian Nynorsk",
+        "own": "norsk nynorsk",
+        "code": "nn",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Nyanja",
+        "own": "Nyanja",
+        "code": "ny",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Occitan",
+        "own": "occitan",
+        "code": "oc",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Odia",
+        "own": "ଓଡ଼ିଆ",
+        "code": "or",
+        "script": "Orya",
+        "sample": "ଁଂଃଅଆଇଈଉଊଋଏଐ"
+      },
+      {
+        "name": "Ojibwa",
+        "own": "Ojibwa",
+        "code": "oj",
+        "script": "Cans",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Oromo",
+        "own": "Oromoo",
+        "code": "om",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Ossetic",
+        "own": "ирон",
+        "code": "os",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Pashto",
+        "own": "پښتو",
+        "code": "ps",
+        "script": "Arab",
+        "sample": "ءآأؤئابةتثجح",
+        "aliases": [
+          "Pushto"
+        ]
+      },
+      {
+        "name": "Quechua",
+        "own": "Runasimi",
+        "code": "qu",
+        "script": "Latn",
+        "sample": "ACHIKLMNPQST"
+      },
+      {
+        "name": "Romansh",
+        "own": "rumantsch",
+        "code": "rm",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Rundi",
+        "own": "Ikirundi",
+        "code": "rn",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Samoan",
+        "own": "Gagana faʻa Sāmoa",
+        "code": "sm",
+        "script": "Latn",
+        "sample": "AEFGILMNOPST"
+      },
+      {
+        "name": "Sango",
+        "own": "Sängö",
+        "code": "sg",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Sanskrit",
+        "own": "संस्कृत भाषा",
+        "code": "sa",
+        "script": "Deva",
+        "sample": "ँंःअआइईउऊऋऌए"
+      },
+      {
+        "name": "Sardinian",
+        "own": "sardu",
+        "code": "sc",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJLM"
+      },
+      {
+        "name": "Scottish Gaelic",
+        "own": "Gàidhlig",
+        "code": "gd",
+        "script": "Latn",
+        "sample": "ABCDEFGHILMN",
+        "aliases": [
+          "Scots Gaelic",
+          "Gaelic"
+        ]
+      },
+      {
+        "name": "Serbian",
+        "own": "српски",
+        "code": "sr",
+        "script": "Cyrl",
+        "sample": "ЂЈЉЊЋЏАБВГДЕ"
+      },
+      {
+        "name": "Shona",
+        "own": "chiShona",
+        "code": "sn",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Sindhi",
+        "own": "سنڌي",
+        "code": "sd",
+        "script": "Arab",
+        "sample": "ءآابتثجحخدذر"
+      },
+      {
+        "name": "Sinhala",
+        "own": "සිංහල",
+        "code": "si",
+        "script": "Sinh",
+        "sample": "ංඃඅආඇඈඉඊඋඌඍඑ",
+        "aliases": [
+          "Sinhalese"
+        ]
+      },
+      {
+        "name": "Slovak",
+        "own": "slovenčina",
+        "code": "sk",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Slovenian",
+        "own": "slovenščina",
+        "code": "sl",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "South Ndebele",
+        "own": "South Ndebele",
+        "code": "nr",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Southern Sotho",
+        "own": "Sesotho",
+        "code": "st",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Sundanese",
+        "own": "Basa Sunda",
+        "code": "su",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Swahili",
+        "own": "Kiswahili",
+        "code": "sw",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Swati",
+        "own": "siSwati",
+        "code": "ss",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Swedish",
+        "own": "svenska",
+        "code": "sv",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Tahitian",
+        "own": "Tahitian",
+        "code": "ty",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Tajik",
+        "own": "тоҷикӣ",
+        "code": "tg",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Tatar",
+        "own": "татар",
+        "code": "tt",
+        "script": "Cyrl",
+        "sample": "ЁАБВГДЕЖЗИЙК"
+      },
+      {
+        "name": "Tibetan",
+        "own": "བོད་སྐད་",
+        "code": "bo",
+        "script": "Tibt",
+        "sample": "ཀཁགངཅཆཇཉཊཋཌཎ"
+      },
+      {
+        "name": "Tigrinya",
+        "own": "ትግርኛ",
+        "code": "ti",
+        "script": "Ethi",
+        "sample": "ሀሁሂሃሄህሆለሉሊላሌ"
+      },
+      {
+        "name": "Tongan",
+        "own": "lea fakatonga",
+        "code": "to",
+        "script": "Latn",
+        "sample": "AEFGHIKLMNOP"
+      },
+      {
+        "name": "Tsonga",
+        "own": "Xitsonga",
+        "code": "ts",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Tswana",
+        "own": "Setswana",
+        "code": "tn",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Turkmen",
+        "own": "türkmen dili",
+        "code": "tk",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Twi",
+        "own": "Akan",
+        "code": "tw",
+        "script": "",
+        "sample": "ABDEFGHIKLMN"
+      },
+      {
+        "name": "Uyghur",
+        "own": "ئۇيغۇرچە",
+        "code": "ug",
+        "script": "Arab",
+        "sample": "ئابتجخدرزسشغ"
+      },
+      {
+        "name": "Uzbek",
+        "own": "o‘zbek",
+        "code": "uz",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Venda",
+        "own": "Tshivenḓa",
+        "code": "ve",
+        "script": "Latn",
+        "sample": "ABDEFGHIKLMN"
+      },
+      {
+        "name": "Walloon",
+        "own": "walon",
+        "code": "wa",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Western Frisian",
+        "own": "Frysk",
+        "code": "fy",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Wolof",
+        "own": "Wolof",
+        "code": "wo",
+        "script": "Latn",
+        "sample": "ABCDEFGIJKLM"
+      },
+      {
+        "name": "Xhosa",
+        "own": "IsiXhosa",
+        "code": "xh",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Yiddish",
+        "own": "ייִדיש",
+        "code": "yi",
+        "script": "Hebr",
+        "sample": "ִַָּֿׂאבגדהו"
+      },
+      {
+        "name": "Yoruba",
+        "own": "Èdè Yorùbá",
+        "code": "yo",
+        "script": "Latn",
+        "sample": "ABDEFGHIJKLM"
+      },
+      {
+        "name": "Zhuang",
+        "own": "Vahcuengh",
+        "code": "za",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      },
+      {
+        "name": "Zulu",
+        "own": "isiZulu",
+        "code": "zu",
+        "script": "Latn",
+        "sample": "ABCDEFGHIJKL"
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+/* Pull out data (ui/extract.js).  Design tokens from app.css only. */
+
+.xd-pick { width: min(600px, calc(100vw - 40px)); }
+.xd-choices { display: flex; flex-direction: column; gap: 6px; }
+.xd-choice { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 9px 12px;
+             border: 1px solid var(--border-soft); border-radius: 12px; cursor: pointer; }
+.xd-choice:hover { background: var(--surface-2); }
+.xd-choice:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.xd-choice.off { opacity: .55; cursor: default; }
+.xd-choice input { margin-top: 3px; accent-color: var(--accent); }
+.xd-choice span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.xd-choice small { font-size: 12px; }
+.xd-own { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.xd-own textarea { height: auto; padding: 8px 10px; resize: vertical; font: inherit; }
+.xd-list { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.xd-list .st-in { height: 30px; width: 110px; flex: none; }
+.xd-est { min-height: 34px; margin: 12px 0 0; }
+
+.xd-run { width: min(460px, calc(100vw - 40px)); }
+.xd-bar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.xd-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+
+.xd-res { width: min(1040px, calc(100vw - 40px)); }
+.xd-res .td-head { flex-wrap: wrap; }
+.xd-which { width: auto; max-width: 280px; margin-left: auto; }
+.xd-checks { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.xd-check { display: flex; gap: 8px; align-items: flex-start; padding: 7px 10px; border-radius: 9px; font-size: 13px; border: 1px solid; }
+.xd-check svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.xd-check.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-border); }
+.xd-check.warn, .xd-check.bad { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-border); }
+.xd-check.bad { font-weight: 550; }
+.xd-missed > span { flex: 1; }
+.xd-missed .ai-cite { flex: none; margin: -3px -4px -3px 0; }
+.xd-scroll { max-height: 56vh; overflow: auto; border: 1px solid var(--border-soft); border-radius: 12px; }
+.xd-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px 16px; padding: 12px;
+             border-bottom: 1px solid var(--border-soft); }
+.xd-fields[hidden] { display: none; }
+.xd-sec { grid-column: 1 / -1; margin: 6px 0 0; font-size: 12px; font-weight: 600; color: var(--text-2); }
+.xd-sec:first-child { margin-top: 0; }
+.xd-field { display: grid; grid-template-columns: 130px minmax(0, 1fr) 46px; gap: 8px; align-items: center; font-size: 12.5px; }
+.xd-field > span { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xd-field > span small { font-size: 11px; }
+.xd-field .st-in { height: 30px; }
+.xd-field.flag .st-in { border-color: var(--warn); box-shadow: 0 0 0 2px var(--warn-bg); }
+.xd-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.xd-table th { position: sticky; top: 0; background: var(--surface); text-align: left; font-weight: 600; color: var(--text-2);
+               padding: 7px 8px; border-bottom: 1px solid var(--border-soft); z-index: 1; white-space: nowrap; }
+.xd-table th.money, .xd-table th.number { text-align: right; }
+.xd-table td { padding: 1px 2px; border-bottom: 1px solid var(--border-soft); }
+.xd-table td:nth-last-child(-n+2) { width: 1%; white-space: nowrap; }
+.xd-table input { width: 100%; min-width: 70px; height: 28px; border: 1px solid transparent; border-radius: 6px; background: none;
+                  padding: 0 6px; font: inherit; color: inherit; }
+.xd-table input:hover { border-color: var(--border-soft); }
+.xd-table input:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+.xd-table input.money, .xd-table input.number { text-align: right; font-variant-numeric: tabular-nums; }
+.xd-table input.date { font-variant-numeric: tabular-nums; min-width: 92px; }
+.xd-table tr.head input { font-weight: 600; }
+.xd-table tr.flag td { background: var(--warn-bg); }
+.xd-table tr.flag td:first-child { box-shadow: inset 3px 0 0 var(--warn); }
+.xd-nop { display: inline-block; width: 40px; }
+.xd-res .dlg-actions { margin-top: 14px; flex-wrap: wrap; }
+/* a table's footnotes, under it */
+.xd-foot { list-style: none; margin: 10px 4px 2px; padding: 0; font-size: 12px; color: var(--text-2); }
+.xd-foot li { margin: 0 0 4px; line-height: 1.4; }
+.xd-foot b { color: var(--text); font-weight: 600; }
+.xd-foot[hidden] { display: none; }

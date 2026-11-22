@@ -1,0 +1,135 @@
+/* Ask panel, consent dialog and Settings window.  Design tokens from app.css only (light + dark). */
+
+/* ---------------------------------------------------------------- Ask panel (shares the right edge with comments) */
+.aipanel { position: absolute; top: 0; right: 0; bottom: 0; width: var(--side-w, 316px); z-index: 3; display: flex; flex-direction: column;
+           background: var(--surface); border-left: 1px solid var(--border); }
+.ai-head { display: flex; align-items: center; gap: 8px; padding: 14px 10px 10px 14px; }
+.ai-head strong { font-size: 13.5px; font-weight: 600; margin-right: auto; }
+.ai-mark { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.ai-mark svg { width: 15px; height: 15px; }
+.ai-top { padding: 0 12px 8px; display: flex; flex-direction: column; gap: 8px; }
+.ai-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.ai-quick .chip { cursor: pointer; height: 30px; }
+.ai-quick .chip:hover { border-color: var(--accent); color: var(--accent-text); }
+.ai-who { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.ai-setup { border: 1px dashed var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.ai-setup p { margin: 0; line-height: 1.45; font-size: 12.5px; }
+
+.ai-chat { flex: 1; overflow-y: auto; padding: 6px 12px 12px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
+.ai-msg { font-size: 13px; line-height: 1.5; -webkit-user-select: text; user-select: text; cursor: text; }   /* the app turns selection off; answers can be selected and copied */
+.ai-msg ::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.ai-msg button, .ai-meta { cursor: pointer; }
+.ai-meta, .ai-think-tag { -webkit-user-select: none; user-select: none; cursor: default; }
+.ai-msg.me { align-self: flex-end; max-width: 88%; background: var(--accent-soft); color: var(--text); padding: 8px 11px; border-radius: 12px 12px 4px 12px; white-space: pre-wrap; }
+.ai-msg.bot { background: var(--surface-2); padding: 10px 12px; border-radius: 12px 12px 12px 4px; }
+.ai-text p, .ai-text h4 { margin: 0 0 6px; }
+.ai-text h4 { font-size: 13px; font-weight: 650; }
+.ai-text ul, .ai-text ol { margin: 0 0 6px; padding-left: 18px; }
+.ai-text li { margin: 2px 0; }
+/* maths (KaTeX): a little larger than the text around it; a wide formula scrolls rather than spilling out */
+.ai-text .katex { font-size: 1.08em; }
+.ai-math-block { margin: 4px 0 8px; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.ai-math-block .katex-display { margin: 0; }
+/* earlier questions about this document (kept on this computer) */
+.ai-earlier { text-align: center; padding: 2px 8px 4px; border-bottom: 1px solid var(--border-soft); margin-bottom: 2px; }
+.ai-earlier span { opacity: .85; }
+.ai-text > :last-child { margin-bottom: 0; }
+.ai-typing { color: var(--muted); animation: ai-pulse 1.2s ease-in-out infinite; }
+@keyframes ai-pulse { 50% { opacity: .45; } }
+.ai-err { color: var(--danger); margin: 4px 0 0; }
+.ai-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 6px; font-size: 11.5px; }
+.ai-cite { display: inline-flex; align-items: center; gap: 3px; height: 20px; padding: 0 6px; margin: 0 2px; border-radius: 6px;
+           border: 1px solid var(--border); background: var(--surface); color: var(--accent-text); font-size: 11.5px; font-weight: 600;
+           vertical-align: 1px; cursor: pointer; }
+.ai-cite svg { width: 11px; height: 11px; }
+/* the letter card (What does it want?): labelled rows; a value not found in the letter says so in amber */
+.ai-card { display: grid; gap: 7px; }
+.ai-card-row { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.ai-card-k { color: var(--muted); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.ai-card-v { min-width: 0; overflow-wrap: anywhere; }
+.ai-card-v ul { margin: 0; padding-left: 16px; }
+.ai-card-v li { margin: 0 0 3px; }
+.ai-card-v .link-btn { margin-left: 4px; display: inline-flex; gap: 3px; align-items: center; }
+.ai-card-v .link-btn svg { width: 12px; height: 12px; }
+.ai-card-ref { font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: 12.5px; }
+.ai-card-warn { display: block; margin-top: 3px; padding: 3px 7px; border-radius: 6px; font-size: 11.5px;
+                color: var(--warn); background: var(--warn-bg); border: 1px solid var(--warn-border); }
+.ai-card-next { margin: 4px 0 0; padding-top: 7px; border-top: 1px solid var(--border-soft); }
+.ai-cite:hover { border-color: var(--accent); }
+
+.ai-ask { display: flex; gap: 6px; align-items: flex-end; padding: 10px 12px 6px; border-top: 1px solid var(--border-soft); }
+.ai-q { flex: 1; resize: none; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface);
+        font-size: 13px; line-height: 1.4; max-height: 120px; }
+.ai-q:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.ai-send { height: 36px; width: 36px; padding: 0; justify-content: center; }
+.ai-foot { margin: 0; padding: 0 12px 10px; font-size: 11px; }
+.stage:has(.aipanel:not([hidden])) .viewer { right: var(--side-w, 316px); }
+.stage:has(.aipanel:not([hidden])) .scrubber { right: calc(var(--side-w, 316px) + 14px); }
+#editor:has(.aipanel:not([hidden])) .findbar { right: calc(var(--side-w, 316px) + 18px); }
+.ai-msg.me.think { display: flex; flex-direction: column; gap: 3px; }
+.ai-think-tag { font-size: 11px; font-weight: 600; color: var(--accent-text); }
+.ai-think-btn { display: inline-flex; align-items: center; gap: 4px; }
+.ai-think-btn svg { width: 13px; height: 13px; }
+
+/* ---------------------------------------------------------------- consent */
+.ai-consent { width: min(520px, calc(100vw - 40px)); }
+.ai-sent { margin: 4px 0 10px; }
+.ai-sent summary { cursor: pointer; color: var(--accent-text); font-size: 12.5px; font-weight: 500; }
+.ai-sent pre { max-height: 240px; overflow: auto; white-space: pre-wrap; font-size: 11.5px; background: var(--surface-2);
+               border-radius: 8px; padding: 10px; margin: 8px 0 0; }
+
+/* ---------------------------------------------------------------- settings */
+.settings-dlg { width: min(600px, calc(100vw - 40px)); }
+.st-tabs { width: fit-content; margin-bottom: 16px; }
+.st-tabs > button[aria-selected="true"] { background: var(--surface); color: var(--text); font-weight: 550; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.st-panel { display: flex; flex-direction: column; gap: 14px; min-height: 120px; }
+.st-panel .field + .field { margin-top: 0; }
+.st-in { height: 36px; border: 1px solid var(--border); border-radius: 9px; padding: 0 10px; background: var(--surface); font-size: 13.5px; font-weight: 400; min-width: 0; }
+select.st-in { padding-right: 6px; }
+.st-in:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.st-row { display: flex; gap: 6px; align-items: center; }
+.st-row .st-in { flex: 1; }
+.st-hint { font-weight: 400; font-size: 11.5px; }
+.st-switch { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 1px solid var(--border-soft); border-radius: 12px; cursor: pointer; }
+.st-switch > span { display: flex; flex-direction: column; gap: 3px; }
+.st-switch small { line-height: 1.4; }
+.st-switch-in { appearance: none; width: 36px; height: 20px; border-radius: 10px; background: var(--surface-3); position: relative; flex-shrink: 0; margin-top: 2px; cursor: pointer; transition: background .15s; }
+.st-switch-in::after { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: left .15s; }
+.st-switch-in:checked { background: var(--accent); }
+.st-switch-in:checked::after { left: 18px; }
+.st-group { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.st-group:disabled { opacity: .5; }
+.st-test { gap: 10px; }
+.st-more summary { cursor: pointer; font-weight: 550; font-size: 13px; }
+.st-more[open] { display: flex; flex-direction: column; gap: 10px; }
+.st-more p { margin: 6px 0 0; line-height: 1.45; }
+.st-status { min-height: 18px; margin: 12px 0 0; }
+.st-status.bad { color: var(--danger); }
+.st-panel code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+/* family relay: what the relay chose */
+.st-relay { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px dashed var(--border); border-radius: 9px; }
+.st-relay strong { color: var(--text); font-weight: 600; }
+.st-bad { color: var(--danger); }
+
+/* invitations */
+.st-invite { display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid var(--accent-soft); background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface)); border-radius: 12px; }
+.st-invite small { line-height: 1.4; }
+.ai-inv { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.ai-inv .st-in { height: 32px; font-size: 12.5px; }
+.ai-inv-msg { margin: 0; min-height: 0; }
+
+/* Settings › Look (preview) */
+.st-looks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.st-look { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1.5px solid var(--border-soft); border-radius: 12px;
+           background: var(--surface); color: var(--text); font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.st-look:hover { background: var(--surface-2); }
+.st-look[aria-checked="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.st-look:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.st-look-mark { width: 34px; height: 34px; border-radius: 9px; flex: none; }
+img.st-look-mark { display: block; }
+.st-look-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.st-look-text strong { font-weight: 600; font-size: 13px; }
+.st-look-text small { font-size: 11.5px; line-height: 1.3; }
+.st-look-sw { display: flex; flex-direction: column; gap: 3px; flex: none; }
+.st-look-sw i { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }

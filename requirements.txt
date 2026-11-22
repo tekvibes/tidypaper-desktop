@@ -1,0 +1,33 @@
+# Core engine (tested)
+pypdf>=4.0
+pillow>=10.0
+pillow-heif>=0.16
+openpyxl>=3.1
+reportlab>=4.0
+pymupdf>=1.24
+pyhanko>=0.21
+cryptography>=42
+anthropic>=2.0          # optional AI assistant (Claude); other providers use plain HTTPS
+
+# Next phase: modern UI + packaging
+pywebview>=5.0
+darkdetect>=0.8
+pyobjc-framework-Vision>=10; sys_platform == "darwin"   # reading the words in scans on a Mac (Apple's text reader)
+numpy>=2.0              # changing a word in a scan (scanpatch.py: the picture work); loaded only when that is used
+# reading the words in scans with Windows' own reader, when the Tesseract add-on isn't installed (scanwords._windows)
+winrt-runtime>=3.0; sys_platform == "win32"
+winrt-Windows.Media.Ocr>=3.0; sys_platform == "win32"
+winrt-Windows.Graphics.Imaging>=3.0; sys_platform == "win32"
+winrt-Windows.Storage.Streams>=3.0; sys_platform == "win32"
+winrt-Windows.Foundation>=3.0; sys_platform == "win32"
+winrt-Windows.Foundation.Collections>=3.0; sys_platform == "win32"
+winrt-Windows.Globalization>=3.0; sys_platform == "win32"
+pyinstaller>=6.0
+
+# Tests only (selftest.py builds a .docx)
+python-docx>=1.1
+
+# Optional
+# pyzipper      # password-protected zips
+# ocrmypdf      # OCR on PDF files (images work without it)
+# pytesseract   # not needed; Tesseract is called directly

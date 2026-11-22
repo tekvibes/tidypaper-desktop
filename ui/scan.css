@@ -1,0 +1,87 @@
+/* Scan a paper document - design tokens from app.css only, so light and dark both work. */
+
+.scan-sheet { width: min(760px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
+.scan-sheet .td-head { margin-bottom: 18px; }
+
+/* step 1: two big choices */
+.scan-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.scan-choice { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; padding: 20px;
+               border: 1.5px solid var(--border-soft); border-radius: 14px; background: var(--surface); color: var(--text);
+               min-height: 168px; transition: border-color .15s, box-shadow .15s; }
+.scan-choice:hover { border-color: var(--border); box-shadow: var(--lift-shadow); }
+.scan-choice:focus-visible { border-color: var(--accent); }
+.scan-choice strong { font-size: 15px; font-weight: 600; margin-top: 6px; }
+.scan-choice .muted { font-size: 12.5px; line-height: 1.45; }
+.scan-choice-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+                    background: var(--accent-soft); color: var(--accent-text); }
+.scan-choice-icon svg { width: 22px; height: 22px; }
+
+/* step 2: source panel */
+.scan-source { margin-bottom: 4px; }
+.scan-phone { display: flex; gap: 18px; align-items: flex-start; padding: 14px; border-radius: 14px; background: var(--surface-2); }
+.scan-qr { width: 168px; height: 168px; border-radius: 10px; background: #fff; padding: 6px; flex-shrink: 0; image-rendering: pixelated; }
+.scan-phone-text strong { font-size: 14px; }
+.scan-phone-text ol { margin: 6px 0 8px; padding-left: 20px; line-height: 1.6; }
+.scan-phone-text p { margin: 6px 0 0; }
+.scan-addr { display: block; margin-top: 3px; font-family: Consolas, "Cascadia Mono", monospace; font-size: 11.5px;
+             color: var(--text-2); word-break: break-all; -webkit-user-select: all; user-select: all; }
+.scan-device { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 14px; background: var(--surface-2); }
+.scan-device .btn { flex-shrink: 0; }
+.scan-device p { margin: 0; }
+
+.scan-msg { min-height: 20px; margin: 10px 2px 8px; font-size: 13px; color: var(--text-2); }
+.scan-msg:empty { min-height: 0; margin: 6px 0; }
+.scan-msg.ok { color: var(--ok); }
+.scan-msg.bad { color: var(--danger); }
+
+/* the page tray */
+.scan-tray-wrap { border: 1px dashed var(--border); border-radius: 14px; padding: 12px; min-height: 120px; }
+.scan-tray { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.scan-empty { margin: 34px 0; text-align: center; font-size: 13px; }
+.scan-page { display: flex; flex-direction: column; gap: 6px; width: 132px; border-radius: 10px; padding: 6px;
+             background: var(--surface); border: 1px solid var(--border-soft); cursor: grab; }
+.scan-page.wide { width: 172px; }
+.scan-page.dragging { opacity: .4; }
+.scan-page.drop { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.scan-thumb { height: 150px; display: grid; place-items: center; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.scan-page.wide .scan-thumb { height: 120px; }
+.scan-thumb img { max-width: 100%; max-height: 100%; display: block; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.scan-page-bar { display: flex; align-items: center; gap: 0; }
+.scan-page-bar .icon-btn.sm { width: 24px; height: 26px; }
+.scan-page-bar .icon-btn.sm svg { width: 14px; height: 14px; }
+.scan-n { font-size: 12px; font-weight: 600; color: var(--text-2); margin-right: auto; padding-left: 4px; font-variant-numeric: tabular-nums; }
+.danger-hover:hover:not(:disabled) { color: var(--danger) !important; }
+
+/* options */
+.scan-opts { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.scan-more summary { cursor: pointer; color: var(--accent-text); font-weight: 500; font-size: 13px; list-style: none; }
+.scan-more summary::-webkit-details-marker { display: none; }
+.scan-more summary::after { content: " ▾"; }
+.scan-more[open] summary::after { content: " ▴"; }
+.scan-more-body { display: grid; gap: 10px; margin-top: 10px; min-width: 280px; }
+.scan-more-body .field + .field { margin-top: 0; }
+.scan-more select { height: 34px; border: 1px solid var(--border); border-radius: 9px; padding: 0 8px; background: var(--surface); font-weight: 400; }
+.scan-folder-row { display: flex; align-items: center; gap: 8px; }
+.scan-folder { font-weight: 400; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; direction: rtl; text-align: left; }
+
+.scan-discard { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+                background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn); font-size: 13px; font-weight: 500; }
+
+.scan-add-wrap { position: relative; }
+.scan-add-menu { position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 5; min-width: 260px; background: var(--surface);
+                 border: 1px solid var(--border); border-radius: 12px; padding: 5px; box-shadow: var(--lift-shadow); }
+.scan-add-menu button { width: 100%; height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border: 0;
+                        border-radius: 8px; background: transparent; color: var(--text); text-align: left; }
+.scan-add-menu button svg { width: 16px; height: 16px; color: var(--muted); }
+.scan-add-menu button:hover, .scan-add-menu button:focus-visible { background: var(--surface-2); outline: none; }
+
+/* step 3: done */
+.scan-done { display: flex; gap: 14px; align-items: center; padding: 6px 0 16px; }
+.scan-done strong { font-size: 15px; }
+.scan-done p { margin: 2px 0 0; }
+.scan-done-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 640px) {
+  .scan-choices { grid-template-columns: 1fr; }
+  .scan-phone { flex-direction: column; align-items: center; }
+}

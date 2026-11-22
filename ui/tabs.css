@@ -1,0 +1,50 @@
+/* The open documents' tabs across the top of the window (ui/tabs.js), and "+" for Home after them. */
+:root { --tabs-h: 38px; }
+
+.tabbar {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--tabs-h); z-index: 4;
+  display: flex; align-items: flex-end; gap: 4px; padding: 0 8px;
+  background: var(--surface-3); border-bottom: 1px solid var(--border);
+}
+body.has-tabs .view { top: var(--tabs-h); }
+
+.tabs { display: flex; align-items: flex-end; gap: 2px; min-width: 0; flex: 0 1 auto; height: 100%; overflow: hidden; }
+
+.dtab {
+  position: relative; display: flex; align-items: center; gap: 6px;
+  flex: 0 1 210px; min-width: 64px; height: 31px; margin-bottom: -1px; padding: 0 4px 0 12px;
+  border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0;
+  color: var(--muted); cursor: default; outline-offset: -3px;
+}
+.dtab:hover { background: color-mix(in srgb, var(--surface) 50%, transparent); color: var(--text-2); }
+.dtab.on { background: var(--surface); border-color: var(--border); color: var(--text); z-index: 1; }
+.dtab-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 500; }
+.dtab.on .dtab-name { font-weight: 600; }
+
+/* unsaved: an amber dot before the name (as the toolbar's "Edited · not saved") */
+.dtab-dot { display: none; width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; margin-left: -2px; }
+.dtab.dirty .dtab-dot { display: block; }
+
+.dtab-x {
+  width: 22px; height: 22px; flex-shrink: 0; padding: 0; border: 0; border-radius: 6px;
+  display: grid; place-items: center; background: transparent; color: inherit; opacity: 0;
+}
+.dtab-x svg { width: 13px; height: 13px; stroke-width: 2.4; }
+.dtab:hover .dtab-x, .dtab.on .dtab-x, .dtab-x:focus-visible { opacity: .7; }
+.dtab-x:hover { opacity: 1 !important; background: var(--surface-2); }
+
+/* "+": Home.  While Home is shown it's the tab in front, in Home's colour */
+.tab-home {
+  flex-shrink: 0; width: 34px; height: 31px; margin-bottom: -1px; padding: 0;
+  display: grid; place-items: center; border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0;
+  background: transparent; color: var(--text-2);
+}
+.tab-home svg { width: 17px; height: 17px; }
+.tab-home:hover { background: color-mix(in srgb, var(--surface) 50%, transparent); color: var(--text); }
+.tab-home.on { background: var(--desk); border-color: var(--border); color: var(--text); }
+
+/* focus mode: just the pages */
+body.focus .tabbar { display: none; }
+body.focus.has-tabs .view { top: 0; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
