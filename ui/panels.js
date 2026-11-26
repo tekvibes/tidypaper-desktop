@@ -35,8 +35,16 @@
     const f = await api.pick_files("any", true);
     if (fail(f) || !f.paths?.length) return;
     setStatus("Adding pages…");
-    const r = await api.insert_from_files(i, f.paths);
-    if (fail(r)) return setStatus("");
+    const nothingAdded = () => { $("#status").textContent = ""; };   // (setStatus ignores "": "Adding pages…" would stay)
+    const passwords = {};             // a password-protected PDF: asked here, used once, not kept
+    let r = await api.insert_from_files(i, f.paths, passwords);
+    while (r.needs_password) {
+      const pw = await askPassword(r.name, r.wrong);
+      if (pw == null) return nothingAdded();
+      passwords[r.path] = pw;
+      r = await api.insert_from_files(i, f.paths, passwords);
+    }
+    if (fail(r)) return nothingAdded();
     S.current = r.first;
     refreshDoc(r);                    // page count changed: full rebuild, lands on the first new page
     setStatus(r.status);

@@ -587,13 +587,21 @@ class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, Shar
                 self._target = _saved_name(base) if base else None
             if not self._target:
                 return self.save_as()
-            m.save(self._target, user_pw=self._password or "")
+            m.save(self._target)
             self._remember(self._target)
             self._read_saved(self._target)
             self._kept_saved(self._target)
             log.info("saved %s", self._target)
-            note = " It still needs the same password to open." if self._password else ""
+            note = self._password_dropped()
             return {**self._info(), "saved": str(self._target), "status": f"Saved as {self._target.name}.{note}"}
+
+    def _password_dropped(self) -> str:
+        """Saved: an edited copy of a password-protected document opens without the password (the original keeps
+        it).  From now on the tab is that saved copy, so it isn't locked any more."""
+        if not self._password:
+            return ""
+        self._password = None
+        return " It opens without the password - the original still needs it. To lock this copy: More › Protect with a password."
 
     @safe
     def save_as(self, path: str | None = None):
@@ -612,12 +620,12 @@ class Bridge(KeptMixin, ExtractMixin, TranslateMixin, EditMixin, SignMixin, Shar
             p = Path(path)
             if p.suffix.lower() != ".pdf":
                 p = p.with_suffix(".pdf")
-            m.save(p, user_pw=self._password or "")
+            m.save(p)
             self._target = p
             self._remember(p)
             self._read_saved(p)
             self._kept_saved(p)
-            note = " It still needs the same password to open." if self._password else ""
+            note = self._password_dropped()
             return {**self._info(), "saved": str(p), "status": f"Saved as {p.name}.{note}"}
 
     # ---- window

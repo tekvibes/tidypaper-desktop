@@ -442,7 +442,7 @@ class PdfModel:
 
     def save(self, path: str | Path, user_pw: str = "", owner_pw: str = ""):
         path = Path(path)
-        kw = dict(garbage=3, deflate=True)
+        kw = dict(garbage=3, deflate=True, encryption=fitz.PDF_ENCRYPT_NONE)   # no password given: none in the file
         if user_pw or owner_pw:
             kw.update(encryption=fitz.PDF_ENCRYPT_AES_256, user_pw=user_pw, owner_pw=owner_pw or user_pw,
                       permissions=fitz.PDF_PERM_ACCESSIBILITY | fitz.PDF_PERM_PRINT | fitz.PDF_PERM_COPY)

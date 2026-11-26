@@ -118,9 +118,12 @@ class MoreMixin:
 
     # ---- insert pages from other files
     @safe
-    def insert_from_files(self, i: int, paths: list):
+    def insert_from_files(self, i: int, paths: list, passwords: dict | None = None):
         """Insert PDFs (all their pages) and pictures (a page each, fitted to this page's size) after page i,
-        in the order given - one undo step."""
+        in the order given - one undo step.  A password-protected PDF is opened with its password from `passwords`
+        (path -> password, asked by the window); without one, or a wrong one, nothing changes and
+        {"needs_password": True, "path", "name", "wrong"} says which file to ask about.  Passwords aren't kept."""
+        passwords = passwords or {}
         if not paths:
             raise UserError("Choose at least one file.")
         with self._lock:
@@ -136,8 +139,10 @@ class MoreMixin:
                     if ext == ".pdf":
                         other = fitz.open(str(p))
                         if other.needs_pass:
-                            other.close()
-                            raise UserError(f"{p.name} is password-protected - open it and remove the password first.")
+                            given = passwords.get(str(p)) or ""     # (not `pw`: that's this page's width)
+                            if not (given and other.authenticate(given)):
+                                other.close()
+                                return {"needs_password": True, "path": str(p), "name": p.name, "wrong": bool(given)}
                         parts.append(("pdf", other))
                     elif ext in IMAGE_EXTS:
                         png, aspect = picture_png(p)
